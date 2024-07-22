@@ -1,36 +1,27 @@
 spring:
+  application:
+    name: bami
+
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/your_database_name
     username: your_database_username
     password: your_database_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
     hibernate:
       ddl-auto: update
-    show-sql: true
 
   security:
+    user:
+      name: your_spring_security_name
+      password: your_spring_security_password
     oauth2:
       client:
-        registration:
-          google:
-            client-id: YOUR_GOOGLE_CLIENT_ID
-            client-secret: YOUR_GOOGLE_CLIENT_SECRET
-            scope: profile, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
-            client-name: Google
-          naver:
-            client-id: YOUR_NAVER_CLIENT_ID
-            client-secret: YOUR_NAVER_CLIENT_SECRET
-            scope: name, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/naver"
-            client-name: Naver
-          kakao:
-            client-id: "5deef2083b17fcd8d7f73efa97b35c63"
-            client-secret: "8tT6v5G3lssX0UiFBptwo0tzNDNwo37G"
-            scope: profile, account_email
-            redirect-uri: "https://localhost:3000/login/oauth2/code/kakao"
-            client-name: Kakao
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize
@@ -42,3 +33,8 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace

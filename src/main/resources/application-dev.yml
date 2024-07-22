@@ -1,0 +1,22 @@
+security:
+  oauth2:
+    client:
+      registration:
+        google:
+          client-id: YOUR_GOOGLE_CLIENT_ID
+          client-secret: YOUR_GOOGLE_CLIENT_SECRET
+          scope: profile, email
+          redirect-uri: "{baseUrl}/login/oauth2/code/google"
+          client-name: Google
+        naver:
+          client-id: YOUR_NAVER_CLIENT_ID
+          client-secret: YOUR_NAVER_CLIENT_SECRET
+          scope: name, email
+          redirect-uri: "{baseUrl}/login/oauth2/code/naver"
+          client-name: Naver
+        kakao:
+          client-id: "b1cd82a7e7ac478d9acc0f05a59139cd"
+          client-secret: "moSGDy5qi4ZXishMJVJxfnqXrsEoQUUb"
+          scope: profile, account_email
+          redirect-uri: "https://localhost:3000/login/oauth2/code/kakao"
+          client-name: Kakao
