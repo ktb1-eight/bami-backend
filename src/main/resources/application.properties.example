@@ -1,0 +1,14 @@
+spring.application.name=bami
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/<db_name>
+spring.datasource.username=<db_username>
+spring.datasource.password=<db_password>
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.hibernate.ddl-auto=create
+logging.level.org.hibernate.SQL=debug
+org.hibernate.orm.jdbc.bind: trace
+
+spring.security.user.name=<spring_security_name>
+spring.security.user.password=<spring_security_password>
