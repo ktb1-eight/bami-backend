@@ -10,4 +10,6 @@ public class WeatherResultDTO {
     private HttpStatus status;
     private String message;
     private double cur_temperature;
+    private double low_temperature;
+    private double high_temperature;
 }

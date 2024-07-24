@@ -24,10 +24,13 @@ public class WeatherController {
     @Operation(summary = "예보 정보 Get", description = "좌표지점에 대한 예보정보조회기능")
     public WeatherResultDTO getTest(@ParameterObject @ModelAttribute WeatherDTO q) {
         double temperature = service.getTemparature(q);
+        double[] LowHighTemperature = service.getHighLowTemperature(q);
         return WeatherResultDTO.builder()
                 .status(HttpStatus.OK)
                 .message(HttpStatus.OK.toString())
                 .cur_temperature(temperature)
+                .low_temperature(LowHighTemperature[0])
+                .high_temperature(LowHighTemperature[1])
                 .build();
     }
 }

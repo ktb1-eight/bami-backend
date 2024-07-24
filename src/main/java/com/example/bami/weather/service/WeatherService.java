@@ -61,7 +61,7 @@ public class WeatherService {
             Object fcstTime = weather.get("fcstTime");
             fcstValue = Double.parseDouble(weather.get("fcstValue").toString());
 
-            log.info("\tcategory : " + (String) weather.get("category") +
+            log.info("\tcategory : " + weather.get("category") +
                     ", fcst_Value : " + fcstValue +
                     ", fcstDate : " + fcstDate +
                     ", fcstTime : " + fcstTime);
@@ -70,6 +70,30 @@ public class WeatherService {
 
 
         return fcstValue;
+    }
+
+    public double[] getHighLowTemperature(WeatherDTO q){
+        double low_val = 100;
+        double high_val = 0;
+
+        JSONArray parse_item = getForecast(q);
+        JSONObject weather; // parse_item은 배열형태이기 때문에 하나씩 데이터를 하나씩 가져올때 사용
+
+        for (Object o : parse_item) {
+            weather = (JSONObject) o;
+            if (!(weather.get("category")).equals("T1H")) {
+                continue;
+            }
+
+            double fcst_val = Double.parseDouble(weather.get("fcstValue").toString());
+
+            low_val = Math.min(fcst_val, low_val);
+            high_val = Math.max(fcst_val, high_val);
+            log.info(weather.get("fcstTime") + " " + weather.get("fcstDate") + " " + fcst_val);
+        }
+
+
+        return new double[] {low_val, high_val};
     }
     private JSONArray getForecast(WeatherDTO p) {
         JSONArray parse_item = null;
