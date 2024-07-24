@@ -31,7 +31,7 @@ public class WeatherService {
     private final String key;
 
     @Autowired
-    public WeatherService(@Value("${properties.key}") String key) {
+    public WeatherService(@Value("${weather.key}") String key) {
         HttpClient tcpClient = HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         ExchangeStrategies es = ExchangeStrategies.builder()
