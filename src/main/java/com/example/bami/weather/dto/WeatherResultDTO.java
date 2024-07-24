@@ -13,4 +13,5 @@ public class WeatherResultDTO {
     private double low_temperature;
     private double high_temperature;
     private String city;
+
 }
