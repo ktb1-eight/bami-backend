@@ -49,18 +49,17 @@
 </div>
 
 <script>
-    function saveJwtToLocalStorage(jwtToken) {
-        localStorage.setItem('jwtToken', jwtToken);
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('jwtToken')) {
-        const jwtToken = urlParams.get('jwtToken');
-        saveJwtToLocalStorage(jwtToken);
+    if(urlParams.has('accessToken')) {
+        const accessToken = urlParams.get('accessToken');
+        localStorage.setItem('accessToken', accessToken);
         alert('JWT Token saved to local storage');
         window.location.href = '/';
     }
-
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+        window.location.href = '/';
+    }
 
 </script>
 
