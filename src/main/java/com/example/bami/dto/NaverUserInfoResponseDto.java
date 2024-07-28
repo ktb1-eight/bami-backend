@@ -36,22 +36,10 @@ public class NaverUserInfoResponseDto {
         @JsonProperty("email")
         private String email;
 
-        @JsonProperty("gender")
-        private String gender;
-
-        @JsonProperty("age")
-        private String age;
-
-        @JsonProperty("birthday")
-        private String birthday;
-
-        @JsonProperty("profile_image")
-        private String profileImage;
-
-        @JsonProperty("birthyear")
-        private String birthYear;
-
         @JsonProperty("mobile")
         private String mobile;
+
+        @JsonProperty("profile_image")
+        private String profile_image;
     }
 }
