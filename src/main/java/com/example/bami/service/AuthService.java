@@ -2,9 +2,7 @@ package com.example.bami.service;
 
 import com.example.bami.dto.*;
 import com.example.bami.security.JwtTokenProvider;
-import io.jsonwebtoken.security.Keys;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

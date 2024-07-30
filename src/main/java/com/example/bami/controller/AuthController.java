@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/login/oauth2/code")
+@RequestMapping("/api/login/oauth2/code")
 public class AuthController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class AuthController {
 
         response.addCookie(refreshTokenCookie);
 
-        return new RedirectView("/login?accessToken=" + tokens.get("accessToken"));
+        return new RedirectView("http://localhost:3000/login?accessToken=" + tokens.get("accessToken"));
     }
 
     @GetMapping("/google")
