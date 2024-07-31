@@ -34,6 +34,9 @@ public class KakaoUserInfoResponseDto implements Serializable {
         @JsonProperty("profile")
         private Profile profile;
 
+        @JsonProperty("email")
+        private String email;
+
         @Getter
         @NoArgsConstructor
         @JsonIgnoreProperties(ignoreUnknown = true)

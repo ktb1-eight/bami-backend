@@ -179,6 +179,8 @@ public class AuthService {
 
         log.info("[ OAuth2 Service ] Name ---> {} ", responseMap.get("name"));
         log.info("[ OAuth2 Service ] Image ---> {} ", responseMap.get("image"));
+        log.info("[ OAuth2 Service ] Email ---> {} ", responseMap.get("email"));
+
 
         //Create JWT tokens
         String jwtAccessToken = jwtTokenProvider.generateToken(responseMap, 3600000); // 1 hour expiration
@@ -200,6 +202,8 @@ public class AuthService {
         Map<String, String> userInfoMap = new HashMap<>();
         userInfoMap.put("image", userInfo.getKakaoAccount().getProfile().getProfileImageUrl());
         userInfoMap.put("name", userInfo.getKakaoAccount().getProfile().getNickname());
+        userInfoMap.put("email", userInfo.getKakaoAccount().getEmail());
+
         return userInfoMap;
     }
 
@@ -210,6 +214,7 @@ public class AuthService {
         Map<String, String> userInfoMap = new HashMap<>();
         userInfoMap.put("image", userInfo.getPicture());
         userInfoMap.put("name", userInfo.getName());
+        userInfoMap.put("email", userInfo.getEmail());
         return userInfoMap;
     }
 
@@ -220,6 +225,7 @@ public class AuthService {
         Map<String, String> userInfoMap = new HashMap<>();
         userInfoMap.put("image", userInfo.getResponse().getProfile_image());
         userInfoMap.put("name", userInfo.getResponse().getName());
+        userInfoMap.put("email", userInfo.getResponse().getEmail());
         return userInfoMap;
     }
 }
