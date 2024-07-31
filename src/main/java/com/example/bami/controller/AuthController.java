@@ -2,11 +2,9 @@ package com.example.bami.controller;
 
 import com.example.bami.service.AuthService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +48,7 @@ public class AuthController {
 
         response.addCookie(refreshTokenCookie);
 
-        return new RedirectView("/login?accessToken=" + tokens.get("accessToken"));
+        return new RedirectView("http://localhost:3000/login?accessToken=" + tokens.get("accessToken"));
     }
 
     @GetMapping("/naver")
@@ -65,6 +63,6 @@ public class AuthController {
 
         response.addCookie(refreshTokenCookie);
 
-        return new RedirectView("/login?accessToken=" + tokens.get("accessToken"));
+        return new RedirectView("http://localhost:3000/login?accessToken=" + tokens.get("accessToken"));
     }
 }
