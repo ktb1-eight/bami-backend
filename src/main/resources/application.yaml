@@ -7,13 +7,6 @@ spring:
 #    username: your_database_username
 #    password: your_database_password
 
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
-    main:
-      banner-mode: "off"
-
   jpa:
     show-sql: true
     properties:

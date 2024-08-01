@@ -1,6 +1,8 @@
 package com.example.bami.service;
 
+import com.example.bami.domain.BamiUser;
 import com.example.bami.dto.*;
+import com.example.bami.repository.UserRepository;
 import com.example.bami.security.JwtTokenProvider;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.util.function.Function;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     @Value("${security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
@@ -52,8 +55,9 @@ public class AuthService {
     private final static String NAVER_TOKEN_URL = "https://nid.naver.com";
     private final static String NAVER_USER_URL = "https://openapi.naver.com";
 
-    public AuthService(JwtTokenProvider jwtTokenProvider) {
+    public AuthService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     public TokenResponseDto getKakaoToken(String code) {
@@ -164,7 +168,8 @@ public class AuthService {
     public <T> Map<String, String> handleUserLogin(String code,
                                       Function<String, TokenResponseDto> tokenFunction,
                                       Function<String, T> userInfoFunction,
-                                      Function<T, Map<String, String>> responseMapFunction) {
+                                      Function<T, Map<String, String>> responseMapFunction,
+                                      String provider) {
         TokenResponseDto tokenResponse = tokenFunction.apply(code);
         String accessToken = tokenResponse.getAccessToken();
         T userInfo = userInfoFunction.apply(accessToken);
@@ -187,7 +192,15 @@ public class AuthService {
         String jwtRefreshToken = jwtTokenProvider.generateToken(responseMap, 604800000); // 1 week expiration
 
         // 사용자 정보를 DB에 저장하거나 업데이트
-        // ...
+        BamiUser bamiUser = userRepository.findByEmail(responseMap.get("email"));
+        if (bamiUser == null) {
+            bamiUser = new BamiUser();
+            bamiUser.setEmail(responseMap.get("email"));
+            bamiUser.setName(responseMap.get("name"));
+            bamiUser.setOauthProvider(provider);
+        }
+        bamiUser.setProfileImageUrl(responseMap.get("image"));
+        userRepository.save(bamiUser);
 
         responseMap.put("accessToken", jwtAccessToken);
         responseMap.put("refreshToken", jwtRefreshToken);

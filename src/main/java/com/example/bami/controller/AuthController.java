@@ -23,7 +23,7 @@ public class AuthController {
 
     @GetMapping("/kakao")
     public RedirectView loginKakao(@RequestParam("code") String code, HttpServletResponse response) {
-        Map<String, String> tokens = authService.handleUserLogin(code, authService::getKakaoToken, authService::getKakaoUserInfo, authService::mapKakaoUserInfo);
+        Map<String, String> tokens = authService.handleUserLogin(code, authService::getKakaoToken, authService::getKakaoUserInfo, authService::mapKakaoUserInfo, "kakao");
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
         refreshTokenCookie.setHttpOnly(true);
@@ -38,7 +38,7 @@ public class AuthController {
 
     @GetMapping("/google")
     public RedirectView loginGoogle(@RequestParam("code") String code, HttpServletResponse response) {
-        Map<String, String> tokens = authService.handleUserLogin(code, authService::getGoogleToken, authService::getGoogleUserInfo, authService::mapGoogleUserInfo);
+        Map<String, String> tokens = authService.handleUserLogin(code, authService::getGoogleToken, authService::getGoogleUserInfo, authService::mapGoogleUserInfo, "google");
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
         refreshTokenCookie.setHttpOnly(true);
@@ -53,7 +53,7 @@ public class AuthController {
 
     @GetMapping("/naver")
     public RedirectView loginNaver(@RequestParam("code") String code, HttpServletResponse response) {
-        Map<String, String> tokens = authService.handleUserLogin(code, authService::getNaverToken, authService::getNaverUserInfo, authService::mapNaverUserInfo);
+        Map<String, String> tokens = authService.handleUserLogin(code, authService::getNaverToken, authService::getNaverUserInfo, authService::mapNaverUserInfo, "naver");
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
         refreshTokenCookie.setHttpOnly(true);
