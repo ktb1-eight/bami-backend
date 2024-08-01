@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class) //createdAt 값 넣어주기
 @Getter
 @Entity
-public class User {
+public class BamiUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 id 생성
@@ -25,6 +25,7 @@ public class User {
 
     @Setter @Column(nullable = false) private String name;
     @Setter @Column(nullable = false) private String email;
+    @Setter @Column(nullable = false) private String profileImageUrl;
     @Setter @Column(nullable = false) private String oauthProvider;
-    @Setter @Column(nullable = false) private int oauthProviderId;
+    @Setter @Column() private String upcomingScheduleId;
 }
