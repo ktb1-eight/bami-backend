@@ -56,11 +56,11 @@ public class RestaurantService {
 
             for (JsonNode node : documents) {
                 RestaurantDTO restaurant = new RestaurantDTO();
+                String placeName = node.path("place_name").asText();
                 double lat = node.path("y").asDouble();
                 double lon = node.path("x").asDouble();
 
-                // Google Places API를 사용하여 이미지 URL과 이름 가져오기
-                PlacesSearchResult placeDetails = getPlaceDetailsFromGoogle(node.path("place_name").asText(), lat, lon);
+                PlacesSearchResult placeDetails = getPlaceDetailsFromGoogle(placeName, lat, lon);
 
                 restaurant.setImageURL(null);
                 if (placeDetails != null) {
@@ -68,7 +68,9 @@ public class RestaurantService {
                     restaurant.setRating(placeDetails.rating);
                     restaurant.setUserRatingsTotal(placeDetails.userRatingsTotal);
                 }
-                restaurant.setName(node.path("place_name").asText());
+
+                if (restaurant.getImageURL() == null) continue;
+                restaurant.setName(placeName);
                 restaurant.setAddress(node.path("road_address_name").asText());
                 restaurant.setPhone(node.path("phone").asText());
                 restaurant.setDistance(node.path("distance").asDouble());

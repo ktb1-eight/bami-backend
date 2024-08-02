@@ -47,24 +47,20 @@ public class WeatherService {
 
     public double getTemparature(WeatherDTO q){
         double fcstValue = 0;
-
         JSONArray parse_item = getForecast(q);
-        JSONObject weather; // parse_item은 배열형태이기 때문에 하나씩 데이터를 하나씩 가져올때 사용
 
         for (Object o : parse_item) {
-            weather = (JSONObject) o;
+            JSONObject weather = (JSONObject) o;
             if (!(weather.get("category")).equals("T1H")) {
                 continue;
             }
 
-            Object fcstDate = weather.get("fcstDate");
-            Object fcstTime = weather.get("fcstTime");
             fcstValue = Double.parseDouble(weather.get("fcstValue").toString());
 
             log.info("\tcategory : " + weather.get("category") +
                     ", fcst_Value : " + fcstValue +
-                    ", fcstDate : " + fcstDate +
-                    ", fcstTime : " + fcstTime);
+                    ", fcstDate : " + weather.get("fcstDate") +
+                    ", fcstTime : " + weather.get("fcstTime"));
             break;
         }
 
@@ -81,9 +77,7 @@ public class WeatherService {
 
         for (Object o : parse_item) {
             weather = (JSONObject) o;
-            if (!(weather.get("category")).equals("T1H")) {
-                continue;
-            }
+            if (!(weather.get("category")).equals("T1H")) continue;
 
             double fcst_val = Double.parseDouble(weather.get("fcstValue").toString());
 
@@ -124,7 +118,7 @@ public class WeatherService {
 
         } catch ( Exception e) {
             e.printStackTrace();
-            log.error("Unexpected error 111", e);
+            log.error("Unexpected error", e);
         }
 
         return parse_item;
