@@ -1,4 +1,4 @@
-package com.example.bami.dto;
+package com.example.bami.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

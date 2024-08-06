@@ -1,9 +1,7 @@
-package com.example.bami.repository;
+package com.example.bami.user.repository;
 
-import com.example.bami.domain.BamiUser;
+import com.example.bami.user.domain.BamiUser;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
 
 //jpa
 public interface UserRepository extends JpaRepository<BamiUser, Integer> {

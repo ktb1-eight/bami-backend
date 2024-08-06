@@ -1,6 +1,6 @@
-package com.example.bami.controller;
+package com.example.bami.user.controller;
 
-import com.example.bami.service.AuthService;
+import com.example.bami.user.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

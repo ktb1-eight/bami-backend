@@ -1,4 +1,4 @@
-package com.example.bami.security;
+package com.example.bami.user.security;
 
 
 import jakarta.servlet.FilterChain;

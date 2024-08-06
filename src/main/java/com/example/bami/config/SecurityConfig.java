@@ -1,13 +1,12 @@
 package com.example.bami.config;
 
-import com.example.bami.security.JwtAuthenticationFilter;
-import com.example.bami.security.JwtTokenProvider;
+import com.example.bami.user.security.JwtAuthenticationFilter;
+import com.example.bami.user.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 

@@ -1,8 +1,8 @@
-package com.example.bami.controller;
+package com.example.bami.user.controller;
 
-import com.example.bami.domain.BamiUser;
-import com.example.bami.repository.UserRepository;
-import com.example.bami.security.JwtTokenProvider;
+import com.example.bami.user.domain.BamiUser;
+import com.example.bami.user.repository.UserRepository;
+import com.example.bami.user.security.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

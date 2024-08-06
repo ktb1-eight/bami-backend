@@ -1,4 +1,4 @@
-package com.example.bami.domain;
+package com.example.bami.user.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

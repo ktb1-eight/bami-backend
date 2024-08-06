@@ -1,9 +1,13 @@
-package com.example.bami.service;
+package com.example.bami.user.service;
 
-import com.example.bami.domain.BamiUser;
+import com.example.bami.user.domain.BamiUser;
 import com.example.bami.dto.*;
-import com.example.bami.repository.UserRepository;
-import com.example.bami.security.JwtTokenProvider;
+import com.example.bami.user.dto.GoogleUserInfoResponseDto;
+import com.example.bami.user.dto.KakaoUserInfoResponseDto;
+import com.example.bami.user.dto.NaverUserInfoResponseDto;
+import com.example.bami.user.dto.TokenResponseDto;
+import com.example.bami.user.repository.UserRepository;
+import com.example.bami.user.security.JwtTokenProvider;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
