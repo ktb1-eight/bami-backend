@@ -1,7 +1,6 @@
 package com.example.bami.user.service;
 
 import com.example.bami.user.domain.BamiUser;
-import com.example.bami.dto.*;
 import com.example.bami.user.dto.GoogleUserInfoResponseDto;
 import com.example.bami.user.dto.KakaoUserInfoResponseDto;
 import com.example.bami.user.dto.NaverUserInfoResponseDto;
@@ -37,7 +36,7 @@ public class AuthService {
     @Value("${security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
 
-    @Value("${security.oauth2.client.registration.google.client-pw}")
+    @Value("${security.oauth2.client.registration.google.client-secret}")
     private String googleClientPw;
 
     @Value("${security.oauth2.client.registration.google.redirect-uri}")
