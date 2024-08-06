@@ -37,3 +37,6 @@ out/
 ### VS Code ###
 .vscode/
 application.properties
+
+echo ".DS_Store" >> .gitignore
+echo "**/.DS_Store" >> .gitignore
