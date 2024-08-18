@@ -31,7 +31,7 @@ jobs:
     - name: Download API key from private repository
       uses: actions/checkout@v2
       with:
-        repository: ktb-eight/b-api-key
+        repository: ktb-eight/api-key
         token: ${{ secrets.TOKEN_GITHUB }}
         path: api-key
 
