@@ -34,6 +34,7 @@ public class UserController {
 
             if(bamiUser != null) {
                 return ResponseEntity.ok(Map.of(
+                        "id", String.valueOf(bamiUser.getId()),
                     "name", bamiUser.getName(),
                     "email", bamiUser.getEmail(),
                     "image", bamiUser.getProfileImageUrl()
