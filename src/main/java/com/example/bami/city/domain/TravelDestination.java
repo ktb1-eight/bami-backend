@@ -1,10 +1,8 @@
 package com.example.bami.city.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+import com.example.bami.user.domain.BamiUser;
 
 import java.util.Date;
 
@@ -16,7 +14,10 @@ public class TravelDestination {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)  // BamiUser의 id를 참조하는 외래 키
+    private BamiUser user;
+
     private String location;
     private Date startDate;
     private Date endDate;

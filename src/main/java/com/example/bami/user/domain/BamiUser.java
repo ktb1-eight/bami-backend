@@ -1,5 +1,6 @@
 package com.example.bami.user.domain;
 
+import com.example.bami.city.domain.TravelDestination;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @EntityListeners(AuditingEntityListener.class) //createdAt 값 넣어주기
 @Getter
@@ -28,4 +30,7 @@ public class BamiUser {
     @Setter @Column(nullable = false) private String profileImageUrl;
     @Setter @Column(nullable = false) private String oauthProvider;
     @Setter @Column() private String upcomingScheduleId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TravelDestination> travelDestinations;
 }
