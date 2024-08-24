@@ -4,9 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serializable;
+
 @Data
 @Builder
-public class WeatherResultDTO {
+public class WeatherResultDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private HttpStatus status;
     private String message;
     private double cur_temperature;
