@@ -12,6 +12,7 @@ public class ShortTravelController {
     @PostMapping("/submit")
     public void submitTravelPlan(@RequestBody ShortTravelDTO shortTravelDTO) {
         log.info("Received travel plan:");
+        log.info("Travel Purpose: {}", shortTravelDTO.getTravelPurpose());
         log.info("Companion: {}", shortTravelDTO.getCompanion());
         log.info("Transport: {}", shortTravelDTO.getTransport());
         log.info("Preferences: {}", shortTravelDTO.getPreferences());

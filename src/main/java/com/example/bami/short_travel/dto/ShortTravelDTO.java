@@ -8,6 +8,7 @@ public class ShortTravelDTO {
     private String transport;
     private Preferences preferences;
     private Location location;
+    private String travelPurpose;
 
     @Data
     public static class Preferences {
