@@ -50,7 +50,7 @@ jobs:
       shell: bash
 
     - name: Build Docker image
-      run: docker build -t backend-app:latest .
+      run: docker build -t bami-backend:latest .
 
     - name: Save Docker image as tar
       run: docker save -o bami-backend.tar bami-backend:latest
@@ -59,7 +59,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 cp bami-backend.tar s3://your-s3-bucket-name/path/to/bami-backend.tar
+      run: aws s3 cp bami-backend.tar s3://bami-practice-s3/path/to/bami-backend.tar
 
     - name: Add SSH key
       uses: webfactory/ssh-agent@v0.7.0
@@ -72,7 +72,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-        aws s3 cp s3://your-s3-bucket-name/path/to/bami-backend.tar /home/ec2-user/bami-backend.tar
+        aws s3 cp s3://bami-practice-s3/path/to/bami-backend.tar /home/ec2-user/bami-backend.tar
         docker load -i /home/ec2-user/bami-backend.tar
         docker stop bami-backend || true
         docker rm bami-backend || true
