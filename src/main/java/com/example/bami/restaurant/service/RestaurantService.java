@@ -2,6 +2,7 @@ package com.example.bami.restaurant.service;
 
 import com.example.bami.restaurant.dto.RestaurantDTO;
 import com.example.bami.restaurant.dto.RestaurantReqDTO;
+import com.google.maps.errors.ApiException;
 import com.google.maps.model.PlaceType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import com.google.maps.model.PlaceDetails;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +101,11 @@ public class RestaurantService {
             if (response.results.length > 0) {
                 return response.results[0];  // 첫 번째 결과를 반환
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            // 현재 스레드를 다시 인터럽트 상태로 설정
+            Thread.currentThread().interrupt();
+            log.error("Thread was interrupted", e);
+        } catch (ApiException | IOException e) {
             log.error("Error fetching place details from Google Places API", e);
         }
         return null;

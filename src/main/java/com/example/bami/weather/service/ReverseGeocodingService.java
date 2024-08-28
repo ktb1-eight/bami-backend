@@ -2,11 +2,14 @@ package com.example.bami.weather.service;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class ReverseGeocodingService {
@@ -38,9 +41,12 @@ public class ReverseGeocodingService {
             } else {
                 return "주소를 찾을 수 없습니다.";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error occurred: " + e.getMessage();
+        } catch (InterruptedException e) {
+            // 현재 스레드를 다시 인터럽트 상태로 설정
+            Thread.currentThread().interrupt();
+            return "Thread was interrupted" + e.getMessage();
+        } catch (ApiException | IOException e) {
+            return "Error fetching place details from Google Places API" + e.getMessage();
         }
     }
 }

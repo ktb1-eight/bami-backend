@@ -26,12 +26,14 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    private static final String EMAIL_KEY = "email";
+
     @GetMapping("/user-info")
     public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> userInfo = jwtTokenProvider.getClaimsAsMap(token);
-            String email = userInfo.get("email");
+            String email = userInfo.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {
@@ -50,7 +52,7 @@ public class UserController {
                 return ResponseEntity.ok(Map.of(
                         "id", String.valueOf(bamiUser.getId()),
                         "name", bamiUser.getName(),
-                        "email", bamiUser.getEmail(),
+                        EMAIL_KEY, bamiUser.getEmail(),
                         "image", bamiUser.getProfileImageUrl(),
                         "travelDestinations", destinations  // 여행지 리스트 포함
                 ));
@@ -83,7 +85,7 @@ public class UserController {
         String token = jwtTokenProvider.resolveToken(request);
         if(token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> claims = jwtTokenProvider.getClaimsAsMap(token);
-            String email = claims.get("email");
+            String email = claims.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {
@@ -100,7 +102,7 @@ public class UserController {
         String token = jwtTokenProvider.resolveToken(request);
         if(token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> claims = jwtTokenProvider.getClaimsAsMap(token);
-            String email = claims.get("email");
+            String email = claims.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 @Getter
 @NoArgsConstructor // 역직렬화를 위한 기본 생성자

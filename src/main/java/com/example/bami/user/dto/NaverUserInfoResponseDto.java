@@ -40,6 +40,6 @@ public class NaverUserInfoResponseDto {
         private String mobile;
 
         @JsonProperty("profile_image")
-        private String profile_image;
+        private String profileImage;
     }
 }

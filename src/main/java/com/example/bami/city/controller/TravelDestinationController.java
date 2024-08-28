@@ -17,7 +17,6 @@ public class TravelDestinationController {
 
     @PostMapping("/api/save-destination")
     public TravelDestination saveDestination(@RequestBody TravelDestination travelDestination) {
-        System.out.println(travelDestination);
         return service.saveDestination(travelDestination);
     }
 
