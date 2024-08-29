@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class TravelDestination {
+public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

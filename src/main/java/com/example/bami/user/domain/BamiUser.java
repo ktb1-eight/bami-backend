@@ -1,6 +1,6 @@
 package com.example.bami.user.domain;
 
-import com.example.bami.city.domain.TravelDestination;
+import com.example.bami.city.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,5 +32,5 @@ public class BamiUser {
     @Setter @Column() private String upcomingScheduleId;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TravelDestination> travelDestinations;
+    private List<Schedule> schedules;
 }

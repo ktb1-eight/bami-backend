@@ -38,7 +38,7 @@ public class UserController {
 
             if (bamiUser != null) {
                 // 여행지 리스트를 함께 반환
-                List<Map<String, Object>> destinations = bamiUser.getTravelDestinations().stream()
+                List<Map<String, Object>> destinations = bamiUser.getSchedules().stream()
                         .map(destination -> {
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", destination.getId());
