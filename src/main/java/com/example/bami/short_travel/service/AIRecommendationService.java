@@ -17,7 +17,7 @@ public class AIRecommendationService {
 
     private final WebClient webClient;
 
-    @Value("${ai.server.url}")
+    //@Value("${ai.server.url}")
     private String aiServerUrl;
 
     public AIRecommendationService(WebClient.Builder webClientBuilder) {

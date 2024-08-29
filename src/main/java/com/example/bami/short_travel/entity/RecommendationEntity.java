@@ -17,7 +17,6 @@ public class RecommendationEntity {
     private int day;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
     private TravelPlanEntity travelPlan;
 
     @OneToMany(mappedBy = "recommendation", cascade = CascadeType.ALL)
