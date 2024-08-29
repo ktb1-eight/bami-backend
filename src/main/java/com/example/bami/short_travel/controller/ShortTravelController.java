@@ -3,14 +3,17 @@ package com.example.bami.short_travel.controller;
 import com.example.bami.short_travel.dto.PlaceDTO;
 import com.example.bami.short_travel.dto.RecommendationDTO;
 import com.example.bami.short_travel.dto.ShortTravelDTO;
+import com.example.bami.short_travel.service.TravelPlanService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-성
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/shortTrip")
 @Slf4j
 public class ShortTravelController {
 
@@ -26,14 +29,29 @@ public class ShortTravelController {
 //        return aiRecommendationService.getRecommendations(shortTravelDTO);
 //    }
 
+    private final TravelPlanService travelPlanService;
+
+    public ShortTravelController(TravelPlanService travelPlanService) {
+        this.travelPlanService = travelPlanService;
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<String> saveTravelPlan(@RequestBody List<RecommendationDTO> recommendations) {
+        // TODO: 8/28/24 유저 정보 가져와서 연동하기, 로그인 안한 유저 예외 처리 하기
+        try {
+            travelPlanService.saveTravelPlan(recommendations);
+            return ResponseEntity.ok("일정이 성공적으로 저장되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 저장 중 오류 발생: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/submit")
     public List<RecommendationDTO> submitTravelPlan(@RequestBody ShortTravelDTO shortTravelDTO) {
         log.info("Received travel plan: {}", shortTravelDTO);
 
-        // 가짜 데이터 생성
         List<RecommendationDTO> mockRecommendations = createMockRecommendations();
 
-        // 프론트엔드에 가짜 데이터를 반환
         return mockRecommendations;
     }
 
