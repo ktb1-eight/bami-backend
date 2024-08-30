@@ -2,8 +2,16 @@ package com.example.bami.user.controller;
 
 import com.example.bami.user.dto.TokenResponseDto;
 import com.example.bami.user.service.AuthService;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +24,8 @@ import java.util.function.Function;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/login/oauth2/code")
+@RequestMapping("/api/auth/login")
+@Tag(name = "로그인", description = "OAuth2 소셜 로그인 API")
 public class AuthController {
 
     private AuthService authService;
@@ -26,18 +35,57 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "카카오 로그인", description = "카카오 OAuth2 제공자를 이용한 로그인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "액세스 토큰을 포함한 프론트엔드로 리디렉션",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/kakao")
-    public RedirectView loginKakao(@RequestParam("code") String code, HttpServletResponse response) {
+    public RedirectView loginKakao(
+            @Parameter(description = "OAuth2 인증 코드",
+                    examples = @ExampleObject(value = "abc123"),
+                    required = true) @RequestParam("code") String code,
+            HttpServletResponse response) {
         return loginOAuth(code, response, authService::getKakaoToken, authService::getKakaoUserInfo, authService::mapKakaoUserInfo, "kakao");
     }
 
+    @Operation(summary = "구글 로그인", description = "구글 OAuth2 제공자를 이용한 로그인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "액세스 토큰을 포함한 프론트엔드로 리디렉션",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/google")
-    public RedirectView loginGoogle(@RequestParam("code") String code, HttpServletResponse response) {
+    public RedirectView loginGoogle(
+            @Parameter(description = "OAuth2 인증 코드",
+                    examples = @ExampleObject(value = "def456"),
+                    required = true) @RequestParam("code") String code,
+            HttpServletResponse response) {
         return loginOAuth(code, response, authService::getGoogleToken, authService::getGoogleUserInfo, authService::mapGoogleUserInfo, "google");
     }
 
+    @Operation(summary = "네이버 로그인", description = "네이버 OAuth2 제공자를 이용한 로그인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "302", description = "액세스 토큰을 포함한 프론트엔드로 리디렉션",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 파라미터",
+                    content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/naver")
-    public RedirectView loginNaver(@RequestParam("code") String code, HttpServletResponse response) {
+    public RedirectView loginNaver(
+            @Parameter(description = "OAuth2 인증 코드",
+                    examples = @ExampleObject(value = "ghi789"),
+                    required = true) @RequestParam("code") String code,
+            HttpServletResponse response) {
         return loginOAuth(code, response, authService::getNaverToken, authService::getNaverUserInfo, authService::mapNaverUserInfo, "naver");
     }
 
@@ -64,4 +112,3 @@ public class AuthController {
         return refreshTokenCookie;
     }
 }
-
