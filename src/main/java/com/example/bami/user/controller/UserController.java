@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,23 +27,38 @@ public class UserController {
     }
 
     @GetMapping("/user-info")
-    public ResponseEntity<Map<String, String>> getUserInfo(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if(token != null && jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> userInfo = jwtTokenProvider.getClaimsAsMap(token);
             String email = userInfo.get("email");
             BamiUser bamiUser = userRepository.findByEmail(email);
 
-            if(bamiUser != null) {
+            if (bamiUser != null) {
+                // 여행지 리스트를 함께 반환
+                List<Map<String, Object>> destinations = bamiUser.getTravelDestinations().stream()
+                        .map(destination -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("id", destination.getId());
+                            map.put("location", destination.getLocation());
+                            map.put("startDate", destination.getStartDate());
+                            map.put("endDate", destination.getEndDate());
+                            map.put("visited", destination.isVisited());
+                            return map;
+                        }).toList();
+
                 return ResponseEntity.ok(Map.of(
-                    "name", bamiUser.getName(),
-                    "email", bamiUser.getEmail(),
-                    "image", bamiUser.getProfileImageUrl()
+                        "id", String.valueOf(bamiUser.getId()),
+                        "name", bamiUser.getName(),
+                        "email", bamiUser.getEmail(),
+                        "image", bamiUser.getProfileImageUrl(),
+                        "travelDestinations", destinations  // 여행지 리스트 포함
                 ));
             }
         }
         return ResponseEntity.status(401).body(null);
     }
+
 
     @GetMapping("/refresh-token")
     public ResponseEntity<Map<String, String>> refreshToken(HttpServletRequest request) {
