@@ -8,6 +8,7 @@ import com.example.bami.short_travel.entity.TravelPlanEntity;
 import com.example.bami.short_travel.repository.PlaceRepository;
 import com.example.bami.short_travel.repository.RecommendationRepository;
 import com.example.bami.short_travel.repository.TravelPlanRepository;
+import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,13 @@ public class TravelPlanService {
     @Transactional
     public void saveTravelPlan(List<RecommendationDTO> recommendations, int userId) {
         TravelPlanEntity travelPlan = new TravelPlanEntity();
-        travelPlan.setUser(userRepository.findById(userId));
+        BamiUser user = userRepository.findById(userId);
+
+        if (user == null){
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+
+        travelPlan.setUser(user);
 
         for (RecommendationDTO recommendation : recommendations) {
             RecommendationEntity recommendationDay = new RecommendationEntity(recommendation.getDay());
@@ -53,5 +60,7 @@ public class TravelPlanService {
             travelPlan.addRecommendationDay(recommendationDay);
         }
         travelPlanRepository.save(travelPlan);
+        user.addTravelPlan(travelPlan);
+        userRepository.save(user);
     }
 }
