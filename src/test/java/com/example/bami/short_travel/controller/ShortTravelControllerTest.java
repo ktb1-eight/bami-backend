@@ -3,7 +3,11 @@ package com.example.bami.short_travel.controller;
 import com.example.bami.short_travel.dto.PlaceDTO;
 import com.example.bami.short_travel.dto.RecommendationDTO;
 import com.example.bami.short_travel.service.TravelPlanService;
+import com.example.bami.user.domain.BamiUser;
+import com.example.bami.user.repository.UserRepository;
+import com.example.bami.user.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +15,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,29 +45,75 @@ public class ShortTravelControllerTest {
     @MockBean
     private TravelPlanService travelPlanService;
 
-    // TravelPlanService의 동작을 목(mock)으로 설정
-    @Test
-    public void testSaveTravelPlan() throws Exception {
-        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList());
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
-        // JSON으로 요청 본문 생성
+    @MockBean
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @BeforeEach
+    public void setup() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    public void testSaveTravelPlan() throws Exception {
+        // Given
+        String email = "testuser@example.com";
+        BamiUser mockUser = Mockito.mock(BamiUser.class);
+        Mockito.when(mockUser.getId()).thenReturn(1);
+        Mockito.when(mockUser.getEmail()).thenReturn(email);
+
+        Mockito.when(jwtTokenProvider.resolveToken(Mockito.any(HttpServletRequest.class)))
+                .thenReturn("valid-token");
+        Mockito.when(jwtTokenProvider.validateToken("valid-token"))
+                .thenReturn(true);
+        Mockito.when(jwtTokenProvider.getClaimsAsMap("valid-token"))
+                .thenReturn(Map.of("email", email));
+        Mockito.when(userRepository.findByEmail(email))
+                .thenReturn(mockUser);
+
+        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
+
         String requestBody = "[{\"day\":\"1일차\",\"places\":[{\"name\":\"Place1\",\"roadAddress\":\"Road1\",\"lotnoAddress\":\"Lot1\",\"latitude\":1.1,\"longitude\":1.2}]}]";
 
         // POST 요청 수행
         mockMvc.perform(post("/api/shortTrip/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isOk()) // 상태 코드가 200 OK일 것
+                .andExpect(status().isOk())
                 .andExpect(content().string("일정이 성공적으로 저장되었습니다.")); // 응답 메시지가 예상대로일 것
 
         // saveTravelPlan 메소드가 정확히 한 번 호출되었는지, 그리고 올바른 매개변수로 호출되었는지 검증
-        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList());
+        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
-    // 여러 날의 여행 계획이 있는 경우의 처리를 확인
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withMultipleDays() throws Exception {
-        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList());
+        // Given
+        String email = "testuser@example.com";
+        BamiUser mockUser = Mockito.mock(BamiUser.class);
+        Mockito.when(mockUser.getId()).thenReturn(1);
+        Mockito.when(mockUser.getEmail()).thenReturn(email);
+
+        Mockito.when(jwtTokenProvider.resolveToken(Mockito.any(HttpServletRequest.class)))
+                .thenReturn("valid-token");
+        Mockito.when(jwtTokenProvider.validateToken("valid-token"))
+                .thenReturn(true);
+        Mockito.when(jwtTokenProvider.getClaimsAsMap("valid-token"))
+                .thenReturn(Map.of("email", email));
+        Mockito.when(userRepository.findByEmail(email))
+                .thenReturn(mockUser);
+
+        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
 
         // 여러 날의 계획이 있는 요청 본문 생성
         RecommendationDTO recommendation1 = new RecommendationDTO();
@@ -74,39 +131,50 @@ public class ShortTravelControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(Arrays.asList(recommendation1, recommendation2));
 
-        // POST 요청 수행
         mockMvc.perform(post("/api/shortTrip/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(content().string("일정이 성공적으로 저장되었습니다."));
 
-        // saveTravelPlan 메소드가 정확히 한 번 호출되었는지, 그리고 올바른 매개변수로 호출되었는지 검증
-        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList());
+        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
-    // 빈 요청 본문이 전달될 경우의 처리를 확인
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withEmptyRequestBody() throws Exception {
-        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList());
+        // Given
+        String email = "testuser@example.com";
+        BamiUser mockUser = Mockito.mock(BamiUser.class);
+        Mockito.when(mockUser.getId()).thenReturn(1);
+        Mockito.when(mockUser.getEmail()).thenReturn(email);
 
-        // 빈 JSON으로 POST 요청 수행
+        Mockito.when(jwtTokenProvider.resolveToken(Mockito.any(HttpServletRequest.class)))
+                .thenReturn("valid-token");
+        Mockito.when(jwtTokenProvider.validateToken("valid-token"))
+                .thenReturn(true);
+        Mockito.when(jwtTokenProvider.getClaimsAsMap("valid-token"))
+                .thenReturn(Map.of("email", email));
+        Mockito.when(userRepository.findByEmail(email))
+                .thenReturn(mockUser);
+
+        Mockito.doNothing().when(travelPlanService).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
+
         mockMvc.perform(post("/api/shortTrip/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("[]"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("일정이 성공적으로 저장되었습니다."));
 
-        // saveTravelPlan 메소드가 정확히 한 번 호출되었는지 검증
-        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList());
+        verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
-    // 잘못된 JSON으로 POST 요청 수행
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withInvalidRequestBody() throws Exception {
         mockMvc.perform(post("/api/shortTrip/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("invalid json"))
-                .andExpect(status().isBadRequest()); // 상태 코드가 400 Bad Request일 것을 기대
+                .andExpect(status().isBadRequest());
     }
 }
