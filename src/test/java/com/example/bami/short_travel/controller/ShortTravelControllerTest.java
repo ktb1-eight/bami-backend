@@ -62,10 +62,10 @@ public class ShortTravelControllerTest {
                 .build();
     }
 
+    //여행 일정을 저장 후 요청 결과 테스트
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan() throws Exception {
-        // Given
         String email = "testuser@example.com";
         BamiUser mockUser = Mockito.mock(BamiUser.class);
         Mockito.when(mockUser.getId()).thenReturn(1);
@@ -84,7 +84,6 @@ public class ShortTravelControllerTest {
 
         String requestBody = "[{\"day\":\"1일차\",\"places\":[{\"name\":\"Place1\",\"roadAddress\":\"Road1\",\"lotnoAddress\":\"Lot1\",\"latitude\":1.1,\"longitude\":1.2}]}]";
 
-        // POST 요청 수행
         mockMvc.perform(post("/api/shortTrip/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
@@ -95,10 +94,10 @@ public class ShortTravelControllerTest {
         verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
+    // 여러 날의 여행 일정을 저장 후 요청 테스트
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withMultipleDays() throws Exception {
-        // Given
         String email = "testuser@example.com";
         BamiUser mockUser = Mockito.mock(BamiUser.class);
         Mockito.when(mockUser.getId()).thenReturn(1);
@@ -140,10 +139,10 @@ public class ShortTravelControllerTest {
         verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
+    //빈 요청 본문을 준 후 요청 테스트
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withEmptyRequestBody() throws Exception {
-        // Given
         String email = "testuser@example.com";
         BamiUser mockUser = Mockito.mock(BamiUser.class);
         Mockito.when(mockUser.getId()).thenReturn(1);
@@ -169,6 +168,7 @@ public class ShortTravelControllerTest {
         verify(travelPlanService, times(1)).saveTravelPlan(Mockito.anyList(), Mockito.eq(1));
     }
 
+    //잘못된 JSON 형식의 요청이 주어졌을 때, 400 Bad Request 에러를 반환하는지 확인
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testSaveTravelPlan_withInvalidRequestBody() throws Exception {
