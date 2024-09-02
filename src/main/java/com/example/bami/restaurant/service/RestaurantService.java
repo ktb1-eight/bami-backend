@@ -2,29 +2,37 @@ package com.example.bami.restaurant.service;
 
 import com.example.bami.restaurant.dto.RestaurantDTO;
 import com.example.bami.restaurant.dto.RestaurantReqDTO;
-import com.google.maps.model.PlaceType;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
+import com.example.bami.restaurant.dto.RestaurantResultDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
-import com.google.maps.model.PlaceDetails;
+import com.google.maps.model.PlaceType;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 public class RestaurantService {
+
     private final WebClient webClient;
     private final GeoApiContext geoApiContext;
     private final String googleApiKey;
+
+    private static final double SEOUL_CITY_LAT = 37.56570672735707;
+    private static final double SEOUL_CITY_LON = 126.97736222453338;
 
     public RestaurantService(@Value("${kakao.api.key}") String kakaoApiKey,
                              @Value("${google.maps.key}") String googleApiKey) {
@@ -36,6 +44,35 @@ public class RestaurantService {
                 .apiKey(googleApiKey)
                 .build();
         this.googleApiKey = googleApiKey;
+    }
+
+    @PostConstruct
+    @Cacheable(value = "restaurantCache", key = "'seoulCityRestaurants'")
+    public RestaurantResultDTO getSeoulCityRestaurants() {
+        log.info("Fetching Seoul City Restaurants...");
+        RestaurantReqDTO seoulReqDTO = new RestaurantReqDTO();
+        seoulReqDTO.setNx(SEOUL_CITY_LAT);
+        seoulReqDTO.setNy(SEOUL_CITY_LON);
+
+        List<RestaurantDTO> restaurants = getNearbyRestaurants(seoulReqDTO);
+
+        RestaurantResultDTO result = RestaurantResultDTO.builder()
+                .status(HttpStatus.OK)
+                .message("서울 시청 주변 맛집 정보입니다.")
+                .city("서울특별시")
+                .restaurants(restaurants)
+                .build();
+
+        log.info("Seoul City Restaurants have been cached.");
+        return result;
+    }
+
+    @Scheduled(fixedRate = 3600000) // 1시간마다 실행
+    @CachePut(value = "restaurantCache", key = "'seoulCityRestaurants'")
+    public void updateSeoulCityRestaurants() {
+        // This method returns void and takes no parameters
+        log.info("Updating Seoul City Restaurants Cache...");
+        getSeoulCityRestaurants(); // Fetch and cache the data
     }
 
     public List<RestaurantDTO> getNearbyRestaurants(RestaurantReqDTO q) {
@@ -77,9 +114,8 @@ public class RestaurantService {
                 restaurant.setCategory(node.path("category_name").asText());
                 restaurant.setPlaceURL(node.path("place_url").asText());
 
-
                 restaurants.add(restaurant);
-                if (restaurants.size() == 6) break;
+                if (restaurants.size() == 6) break; // 최대 6개의 맛집 정보만 사용
             }
         } catch (Exception e) {
             log.error("Error parsing JSON response", e);

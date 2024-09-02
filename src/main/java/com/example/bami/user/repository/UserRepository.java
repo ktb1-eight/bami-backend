@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<BamiUser, Integer> {
     BamiUser findByEmail(String email); // null 포함 가능
+    BamiUser findById(int id);
 }
