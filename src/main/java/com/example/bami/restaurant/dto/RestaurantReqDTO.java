@@ -1,9 +1,11 @@
 package com.example.bami.restaurant.dto;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Data
+@Getter
 public class RestaurantReqDTO {
-    private double nx;
-    private double ny;
+    private Double nx;
+    private Double ny;
 }

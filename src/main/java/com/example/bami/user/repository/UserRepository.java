@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //jpa
 public interface UserRepository extends JpaRepository<BamiUser, Integer> {
     BamiUser findByEmail(String email); // null 포함 가능
+    BamiUser findById(int id);
 }

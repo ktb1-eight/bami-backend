@@ -1,17 +1,24 @@
 package com.example.bami.weather.service;
 
+import com.example.bami.CacheLoggerService;
 import com.example.bami.weather.dto.WeatherDTO;
+import com.example.bami.weather.dto.WeatherResultDTO;
 import io.netty.channel.ChannelOption;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,11 +34,14 @@ import java.time.format.DateTimeFormatter;
 @Service
 @Slf4j
 public class WeatherService {
+    private final CacheLoggerService cacheLoggerService;
     private final WebClient webClient;
     private final String key;
 
+    private static final String SEOUL_CITY_ADDRESS = "대한민국 서울특별시 중구 태평로1가";
     @Autowired
-    public WeatherService(@Value("${weather.key}") String key) {
+    public WeatherService(@Value("${weather.key}") String key, CacheLoggerService cacheLoggerService) {
+        this.cacheLoggerService = cacheLoggerService;
         HttpClient tcpClient = HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         ExchangeStrategies es = ExchangeStrategies.builder()
@@ -56,11 +66,6 @@ public class WeatherService {
             }
 
             fcstValue = Double.parseDouble(weather.get("fcstValue").toString());
-
-            log.info("\tcategory : " + weather.get("category") +
-                    ", fcst_Value : " + fcstValue +
-                    ", fcstDate : " + weather.get("fcstDate") +
-                    ", fcstTime : " + weather.get("fcstTime"));
             break;
         }
 
@@ -94,7 +99,7 @@ public class WeatherService {
 
         String uriString =
                 String.format("https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=%s&pageNo=%s&numOfRows=%s&dataType=json&base_date=%s&base_time=%s&nx=%d&ny=%d",
-                        this.key, p.getPageNo(), p.getNumOfRows(), currentDate(), currentTime(), (int)p.getNx(), (int)p.getNy());
+                        this.key, p.getPageNo(), p.getNumOfRows(), currentDate(), currentTime(), p.getNx().intValue(), p.getNy().intValue());
         log.info(uriString);
         try {
             String json = webClient.get()
@@ -117,7 +122,6 @@ public class WeatherService {
             parse_item = (JSONArray) parse_items.get("item");
 
         } catch ( Exception e) {
-            e.printStackTrace();
             log.error("Unexpected error", e);
         }
 
@@ -136,5 +140,36 @@ public class WeatherService {
         now = now.minusHours(1);
 
         return now.format(DateTimeFormatter.ofPattern("HH00"));
+    }
+
+    @PostConstruct
+    @Cacheable(value = "weatherCache", key = "'seoulCityWeather'")
+    public WeatherResultDTO getSeoulCityWeather() {
+        WeatherDTO seoulDTO = new WeatherDTO();
+        seoulDTO.setNx(37.56570672735707);
+        seoulDTO.setNy(126.97736222453338);
+
+        double temperature = getTemparature(seoulDTO);
+        double[] lowHighTemperature = getHighLowTemperature(seoulDTO);
+
+        WeatherResultDTO result = WeatherResultDTO.builder()
+                .cur_temperature(temperature)
+                .low_temperature(lowHighTemperature[0])
+                .high_temperature(lowHighTemperature[1])
+                .city(SEOUL_CITY_ADDRESS)
+                .status(HttpStatus.OK)
+                .message("서울 시청의 날씨 정보입니다.")
+                .build();
+
+        log.info("Seoul City Weather has been cached.");
+        cacheLoggerService.cacheAll();
+
+        return result;
+    }
+
+    @Scheduled(fixedRate = 3600000) // 1시간마다 실행
+    @CachePut(value = "weatherCache", key = "'seoulCityWeather'")
+    public void updateSeoulCityWeather() {
+        getSeoulCityWeather();
     }
 }

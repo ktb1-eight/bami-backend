@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,18 +23,24 @@ public class WeatherController {
 
     @GetMapping
     @Operation(summary = "예보 정보 Get", description = "좌표지점에 대한 예보정보조회기능")
-    public WeatherResultDTO getTest(@ParameterObject @ModelAttribute WeatherDTO q) {
-        double temperature = service.getTemparature(q);
-        double[] LowHighTemperature = service.getHighLowTemperature(q);
-        String city = reverseGeocodingService.getAddress(q.getNx(), q.getNy());
+    public WeatherResultDTO getWeather(@ModelAttribute WeatherDTO q) {
+        System.out.println(q);
+        if (q.getNx() == null || q.getNy() == null) {
+            log.info("위치 정보가 없어 서울 시청 날씨 데이터를 반환합니다.");
+            return service.getSeoulCityWeather();
+        } else {
+            double temperature = service.getTemparature(q);
+            double[] LowHighTemperature = service.getHighLowTemperature(q);
+            String city = reverseGeocodingService.getAddress(q.getNx(), q.getNy());
 
-        return WeatherResultDTO.builder()
-                .status(HttpStatus.OK)
-                .message(HttpStatus.OK.toString())
-                .cur_temperature(temperature)
-                .low_temperature(LowHighTemperature[0])
-                .high_temperature(LowHighTemperature[1])
-                .city(city)
-                .build();
+            return WeatherResultDTO.builder()
+                    .status(HttpStatus.OK)
+                    .message(HttpStatus.OK.toString())
+                    .cur_temperature(temperature)
+                    .low_temperature(LowHighTemperature[0])
+                    .high_temperature(LowHighTemperature[1])
+                    .city(city)
+                    .build();
+        }
     }
 }

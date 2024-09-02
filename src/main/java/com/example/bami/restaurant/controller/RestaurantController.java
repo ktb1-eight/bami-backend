@@ -27,14 +27,19 @@ public class RestaurantController {
     @GetMapping
     @Operation(summary = "맛집 정보 Get", description = "좌표지점에 대한 맛집정보조회기능")
     public RestaurantResultDTO getRestaurants(@ParameterObject @ModelAttribute RestaurantReqDTO q) {
-        String city = reverseGeocodingService.getAddress(q.getNx(), q.getNy());
-        List<RestaurantDTO> restaurants = restaurantService.getNearbyRestaurants(q);
+        if (q.getNx() == null || q.getNy() == null) {
+            log.info("위치 정보가 없어 서울 시청 맛집 데이터를 반환합니다.");
+            return restaurantService.getSeoulCityRestaurants();
+        } else {
+            String city = reverseGeocodingService.getAddress(q.getNx(), q.getNy());
+            List<RestaurantDTO> restaurants = restaurantService.getNearbyRestaurants(q);
 
-        return RestaurantResultDTO.builder()
-                .status(HttpStatus.OK)
-                .message(HttpStatus.OK.toString())
-                .city(city)
-                .restaurants(restaurants)
-                .build();
+            return RestaurantResultDTO.builder()
+                    .status(HttpStatus.OK)
+                    .message(HttpStatus.OK.toString())
+                    .city(city)
+                    .restaurants(restaurants)
+                    .build();
+        }
     }
 }
