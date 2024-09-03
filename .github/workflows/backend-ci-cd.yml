@@ -27,10 +27,11 @@ jobs:
         repository: ktb1-eight/api-key
         token: ${{ secrets.TOKEN_GITHUB }}
         path: api-key
+        fetch-depth: 1 #최신 버전 커밋을 위해 ㅋ
 
     - name: Copy application-dev.yml
       run: |
-        cp api-key/application-dev.yml src/main/resources/
+        cp -f api-key/application-dev.yml src/main/resources/
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
