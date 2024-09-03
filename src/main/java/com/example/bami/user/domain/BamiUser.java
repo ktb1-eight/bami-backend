@@ -2,7 +2,6 @@ package com.example.bami.user.domain;
 
 import com.example.bami.city.domain.Schedule;
 import com.example.bami.short_travel.entity.TravelPlanEntity;
-import com.example.bami.city.domain.TravelDestination;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
