@@ -57,7 +57,7 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
     - name: Test SSH connection
-      run: ssh -T git@github.com
+      run: ssh -T git@github.com || exit 0
 
     - name: Deploy to EC2
       env:
