@@ -1,5 +1,6 @@
 package com.example.bami.user.domain;
 
+import com.example.bami.city.domain.Schedule;
 import com.example.bami.short_travel.entity.TravelPlanEntity;
 import com.example.bami.city.domain.TravelDestination;
 import jakarta.persistence.*;
@@ -37,7 +38,7 @@ public class BamiUser {
     private List<TravelPlanEntity> travelPlans = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TravelDestination> travelDestinations;
+    private List<Schedule> schedules;
 
     public void addTravelPlan(TravelPlanEntity travelPlan) {
         travelPlans.add(travelPlan);

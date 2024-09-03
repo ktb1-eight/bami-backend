@@ -45,7 +45,7 @@ public class JwtTokenProvider {
     public Map<String, String> getClaimsAsMap(String token) {
         Claims claims = getClaims(token);
         Map<String, String> claimsMap = new HashMap<>();
-        claims.forEach((key, value) -> claimsMap.put(key, String.valueOf(value)));
+        claims.forEach((claimKey, value) -> claimsMap.put(claimKey, String.valueOf(value)));
         return claimsMap;
     }
 

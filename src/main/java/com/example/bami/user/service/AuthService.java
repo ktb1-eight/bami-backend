@@ -47,16 +47,35 @@ public class AuthService {
 
     @Value("${security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
+    
+    @Value("${security.oauth2.client.provider.kakao.token-uri}")
+    private String kakaoTokenUri;
 
-//    @Value("${security.oauth2.client.registration.naver.redirect-uri}")
-//    private String naverRedirectUri;
+    @Value("${security.oauth2.client.provider.kakao.user-info-uri}")
+    private String kakaoUserInfoUri;
 
-    private final static String KAUTH_TOKEN_URL_HOST = "https://kauth.kakao.com";
-    private final static String KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
-    private final static String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com";
-    private final static String GOOGLE_USER_URL = "https://www.googleapis.com";
-    private final static String NAVER_TOKEN_URL = "https://nid.naver.com";
-    private final static String NAVER_USER_URL = "https://openapi.naver.com";
+    @Value("${security.oauth2.client.provider.google.token-uri}")
+    private String googleTokenUri;
+
+    @Value("${security.oauth2.client.provider.google.user-info-uri}")
+    private String googleUserInfoUri;
+
+    @Value("${security.oauth2.client.provider.naver.token-uri}")
+    private String naverTokenUri;
+
+    @Value("${security.oauth2.client.provider.naver.user-info-uri}")
+    private String naverUserInfoUri;
+
+    private static final String HTTPS = "https";
+    private static final String GRANT_TYPE = "grant_type";
+    private static final String AUTHORIZATION_CODE = "authorization_code";
+    private static final String CLIENT_ID = "client_id";
+    private static final String CLIENT_ERROR_TEXT = "Invalid Parameter";
+    private static final String SERVER_ERROR_TEXT = "Internal Server Error";
+    private static final String BEARER = "Bearer ";
+    private static final String NAME = "name";
+    private static final String EMAIL = "email";
+    private static final String IMAGE = "image";
 
     public AuthService(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -64,106 +83,106 @@ public class AuthService {
     }
 
     public TokenResponseDto getKakaoToken(String code) {
-        return WebClient.create(KAUTH_TOKEN_URL_HOST)
+        return WebClient.create(kakaoTokenUri)
                 .post()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/oauth/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", kakaoClientId)
+                        .queryParam(GRANT_TYPE, AUTHORIZATION_CODE)
+                        .queryParam(CLIENT_ID, kakaoClientId)
                         .queryParam("redirect_uri", kakaoRedirectUri)
                         .queryParam("code", code)
                         .build(true))
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(TokenResponseDto.class)
                 .block();
     }
 
     public KakaoUserInfoResponseDto getKakaoUserInfo(String accessToken) {
-        return WebClient.create(KAUTH_USER_URL_HOST)
+        return WebClient.create(kakaoUserInfoUri)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/v2/user/me")
                         .build(true))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(KakaoUserInfoResponseDto.class)
                 .block();
     }
 
     public TokenResponseDto getGoogleToken(String code) {
-        return WebClient.create(GOOGLE_TOKEN_URL)
+        return WebClient.create(googleTokenUri)
                 .post()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", googleClientId)
+                        .queryParam(GRANT_TYPE, AUTHORIZATION_CODE)
+                        .queryParam(CLIENT_ID, googleClientId)
                         .queryParam("client_secret", googleClientPw)
                         .queryParam("redirect_uri", googleRedirectUri)
                         .queryParam("code", code)
                         .build(true))
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(TokenResponseDto.class)
                 .block();
     }
 
     public GoogleUserInfoResponseDto getGoogleUserInfo(String accessToken) {
-        return WebClient.create(GOOGLE_USER_URL)
+        return WebClient.create(googleUserInfoUri)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/userinfo/v2/me")
                         .build(true))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(GoogleUserInfoResponseDto.class)
                 .block();
     }
 
     public TokenResponseDto getNaverToken(String code) {
-        return WebClient.create(NAVER_TOKEN_URL)
+        return WebClient.create(naverTokenUri)
                 .post()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/oauth2.0/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", naverClientId)
+                        .queryParam(GRANT_TYPE, AUTHORIZATION_CODE)
+                        .queryParam(CLIENT_ID, naverClientId)
                         .queryParam("client_secret", naverClientSecret)
                         .queryParam("code", code)
                         .queryParam("state", "STATE_STRING")
                         .build(true))
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(TokenResponseDto.class)
                 .block();
     }
 
     public NaverUserInfoResponseDto getNaverUserInfo(String accessToken) {
-        return WebClient.create(NAVER_USER_URL)
+        return WebClient.create(naverUserInfoUri)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme(HTTPS)
                         .path("/v1/nid/me")
                         .build(true))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException(CLIENT_ERROR_TEXT)))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException(SERVER_ERROR_TEXT)))
                 .bodyToMono(NaverUserInfoResponseDto.class)
                 .block();
     }
@@ -178,16 +197,16 @@ public class AuthService {
         T userInfo = userInfoFunction.apply(accessToken);
 
         if (userInfo == null) {
-            throw new RuntimeException("Failed to retrieve user information from provider");
+            throw new IllegalArgumentException("Failed to retrieve user information from provider");
         }
 
         Map<String, String> responseMap = responseMapFunction.apply(userInfo);
 
         responseMap = new HashMap<>(responseMap);
 
-        log.info("[ OAuth2 Service ] Name ---> {} ", responseMap.get("name"));
-        log.info("[ OAuth2 Service ] Image ---> {} ", responseMap.get("image"));
-        log.info("[ OAuth2 Service ] Email ---> {} ", responseMap.get("email"));
+        log.info("[ OAuth2 Service ] Name ---> {} ", responseMap.get(NAME));
+        log.info("[ OAuth2 Service ] Image ---> {} ", responseMap.get(IMAGE));
+        log.info("[ OAuth2 Service ] Email ---> {} ", responseMap.get(EMAIL));
 
 
         //Create JWT tokens
@@ -195,14 +214,14 @@ public class AuthService {
         String jwtRefreshToken = jwtTokenProvider.generateToken(responseMap, 604800000); // 1 week expiration
 
         // 사용자 정보를 DB에 저장하거나 업데이트
-        BamiUser bamiUser = userRepository.findByEmail(responseMap.get("email"));
+        BamiUser bamiUser = userRepository.findByEmail(responseMap.get(EMAIL));
         if (bamiUser == null) {
             bamiUser = new BamiUser();
-            bamiUser.setEmail(responseMap.get("email"));
-            bamiUser.setName(responseMap.get("name"));
+            bamiUser.setEmail(responseMap.get(EMAIL));
+            bamiUser.setName(responseMap.get(NAME));
             bamiUser.setOauthProvider(provider);
         }
-        bamiUser.setProfileImageUrl(responseMap.get("image"));
+        bamiUser.setProfileImageUrl(responseMap.get(IMAGE));
         userRepository.save(bamiUser);
 
         responseMap.put("accessToken", jwtAccessToken);
@@ -216,9 +235,9 @@ public class AuthService {
             throw new IllegalArgumentException("Failed to retrieve user information from Kakao");
         }
         Map<String, String> userInfoMap = new HashMap<>();
-        userInfoMap.put("image", userInfo.getKakaoAccount().getProfile().getProfileImageUrl());
-        userInfoMap.put("name", userInfo.getKakaoAccount().getProfile().getNickname());
-        userInfoMap.put("email", userInfo.getKakaoAccount().getEmail());
+        userInfoMap.put(IMAGE, userInfo.getKakaoAccount().getProfile().getProfileImageUrl());
+        userInfoMap.put(NAME, userInfo.getKakaoAccount().getProfile().getNickname());
+        userInfoMap.put(EMAIL, userInfo.getKakaoAccount().getEmail());
 
         return userInfoMap;
     }
@@ -228,20 +247,20 @@ public class AuthService {
             throw new IllegalArgumentException("Failed to retrieve user information from Google");
         }
         Map<String, String> userInfoMap = new HashMap<>();
-        userInfoMap.put("image", userInfo.getPicture());
-        userInfoMap.put("name", userInfo.getName());
-        userInfoMap.put("email", userInfo.getEmail());
+        userInfoMap.put(IMAGE, userInfo.getPicture());
+        userInfoMap.put(NAME, userInfo.getName());
+        userInfoMap.put(EMAIL, userInfo.getEmail());
         return userInfoMap;
     }
 
     public Map<String, String> mapNaverUserInfo(NaverUserInfoResponseDto userInfo) {
-        if (userInfo.getResponse().getProfile_image() == null || userInfo.getResponse().getNickname() == null) {
+        if (userInfo.getResponse().getProfileImage() == null || userInfo.getResponse().getNickname() == null) {
             throw new IllegalArgumentException("Failed to retrieve user information from Naver");
         }
         Map<String, String> userInfoMap = new HashMap<>();
-        userInfoMap.put("image", userInfo.getResponse().getProfile_image());
-        userInfoMap.put("name", userInfo.getResponse().getName());
-        userInfoMap.put("email", userInfo.getResponse().getEmail());
+        userInfoMap.put(IMAGE, userInfo.getResponse().getProfileImage());
+        userInfoMap.put(NAME, userInfo.getResponse().getName());
+        userInfoMap.put(EMAIL, userInfo.getResponse().getEmail());
         return userInfoMap;
     }
 }

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.1'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id "org.sonarqube" version "4.4.1.3373"
 }
 
 group = 'com.example'
@@ -17,6 +18,15 @@ repositories {
 	mavenCentral()
 }
 
+sonar {
+	properties {
+		property "sonar.projectKey", "bami"
+		property "sonar.projectName", "bami"
+		property "sonar.host.url", "http://localhost:9000"
+		property "sonar.login", System.getenv("SONARQUBE_TOKEN")
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -27,7 +37,6 @@ dependencies {
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
 	implementation 'org.projectlombok:lombok'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
@@ -56,6 +65,10 @@ dependencies {
 
 	//Web Crawling
 	implementation 'org.jsoup:jsoup:1.14.3'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-core'
+	runtimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {

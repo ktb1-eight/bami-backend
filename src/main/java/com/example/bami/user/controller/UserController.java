@@ -3,8 +3,15 @@ package com.example.bami.user.controller;
 import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
 import com.example.bami.user.security.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +22,8 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
+@Tag(name = "사용자 관리", description = "사용자 정보 조회, 수정, 삭제 등의 작업을 수행합니다.")
 public class UserController {
 
     private JwtTokenProvider jwtTokenProvider;
@@ -26,17 +34,24 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/user-info")
-    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+    private static final String EMAIL_KEY = "email";
+
+    @Operation(summary = "사용자 정보 조회", description = "JWT 토큰을 통해 인증된 사용자의 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 반환 성공", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(hidden = true)))
+    })
+    @GetMapping("/retrieve-info")
+    public ResponseEntity<Map<String, Object>> getUserInfo(
+            @Parameter(description = "HTTP 요청", required = true) HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> userInfo = jwtTokenProvider.getClaimsAsMap(token);
-            String email = userInfo.get("email");
+            String email = userInfo.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {
-                // 여행지 리스트를 함께 반환
-                List<Map<String, Object>> destinations = bamiUser.getTravelDestinations().stream()
+                List<Map<String, Object>> destinations = bamiUser.getSchedules().stream()
                         .map(destination -> {
                             Map<String, Object> map = new HashMap<>();
                             map.put("id", destination.getId());
@@ -50,18 +65,23 @@ public class UserController {
                 return ResponseEntity.ok(Map.of(
                         "id", String.valueOf(bamiUser.getId()),
                         "name", bamiUser.getName(),
-                        "email", bamiUser.getEmail(),
+                        EMAIL_KEY, bamiUser.getEmail(),
                         "image", bamiUser.getProfileImageUrl(),
-                        "travelDestinations", destinations  // 여행지 리스트 포함
+                        "travelDestinations", destinations
                 ));
             }
         }
         return ResponseEntity.status(401).body(null);
     }
 
-
+    @Operation(summary = "새로운 액세스 토큰 발급", description = "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "새로운 액세스 토큰 발급 성공", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "리프레시 토큰이 유효하지 않음", content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/refresh-token")
-    public ResponseEntity<Map<String, String>> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> refreshToken(
+            @Parameter(description = "HTTP 요청", required = true) HttpServletRequest request) {
         String refreshToken = null;
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals("refreshToken")) {
@@ -78,12 +98,20 @@ public class UserController {
         }
     }
 
-    @PostMapping("/update-user-info")
-    public ResponseEntity<String> updateUserInfo(@RequestBody Map<String, String> userInfo, HttpServletRequest request) {
+    @Operation(summary = "사용자 정보 업데이트", description = "JWT 토큰을 통해 인증된 사용자의 정보를 업데이트합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 정보 업데이트 성공", content = @Content(mediaType = "text/plain")),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(hidden = true)))
+    })
+    @PutMapping("/update-info")
+    public ResponseEntity<String> updateUserInfo(
+            @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "업데이트할 사용자 정보", required = true) Map<String, String> userInfo,
+            @Parameter(description = "HTTP 요청", required = true) HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if(token != null && jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> claims = jwtTokenProvider.getClaimsAsMap(token);
-            String email = claims.get("email");
+            String email = claims.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {
@@ -95,12 +123,19 @@ public class UserController {
         return ResponseEntity.status(401).body("Unauthorized");
     }
 
-    @PostMapping("/delete-account")
-    public ResponseEntity<String> deleteAccount(HttpServletRequest request) {
+    @Operation(summary = "계정 삭제", description = "JWT 토큰을 통해 인증된 사용자의 계정을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "계정 삭제 성공", content = @Content(mediaType = "text/plain")),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(hidden = true)))
+    })
+    @DeleteMapping("/delete-info")
+    public ResponseEntity<String> deleteAccount(
+            @Parameter(description = "HTTP 요청", required = true) HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if(token != null && jwtTokenProvider.validateToken(token)) {
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             Map<String, String> claims = jwtTokenProvider.getClaimsAsMap(token);
-            String email = claims.get("email");
+            String email = claims.get(EMAIL_KEY);
             BamiUser bamiUser = userRepository.findByEmail(email);
 
             if (bamiUser != null) {
