@@ -64,7 +64,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_BACKEND }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_BACKEND }}
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
         set -e  # Exit immediately if a command exits with a non-zero status
         echo "Downloading Docker image tar from S3..."
         aws s3 cp s3://bami-practice-s3/path/to/bami-backend.tar /home/ec2-user/bami-backend.tar --region ap-northeast-2
