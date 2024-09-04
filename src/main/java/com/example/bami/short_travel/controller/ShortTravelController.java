@@ -48,6 +48,7 @@ public class ShortTravelController {
     public ResponseEntity<String> saveTravelPlan(@RequestBody SaveShortTravelDTO saveShortTravelDTO, HttpServletRequest request) {
         log.info(saveShortTravelDTO.getStartDate());
         log.info(saveShortTravelDTO.getEndDate());
+
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");

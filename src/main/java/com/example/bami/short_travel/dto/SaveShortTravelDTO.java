@@ -14,4 +14,6 @@ public class SaveShortTravelDTO {
     private List<RecommendationDTO> recommendations;
     private String startDate;
     private String endDate;
+    private Double latitude;
+    private Double longitude;
 }
