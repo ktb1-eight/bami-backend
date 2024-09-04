@@ -2,6 +2,7 @@ package com.example.bami.short_travel.controller;
 
 import com.example.bami.short_travel.dto.PlaceDTO;
 import com.example.bami.short_travel.dto.RecommendationDTO;
+import com.example.bami.short_travel.dto.SaveShortTravelDTO;
 import com.example.bami.short_travel.dto.ShortTravelDTO;
 import com.example.bami.short_travel.service.TravelPlanService;
 import com.example.bami.user.domain.BamiUser;
@@ -44,7 +45,9 @@ public class ShortTravelController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<String> saveTravelPlan(@RequestBody List<RecommendationDTO> recommendations, HttpServletRequest request) {
+    public ResponseEntity<String> saveTravelPlan(@RequestBody SaveShortTravelDTO saveShortTravelDTO, HttpServletRequest request) {
+        log.info(saveShortTravelDTO.getStartDate());
+        log.info(saveShortTravelDTO.getEndDate());
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
@@ -63,7 +66,7 @@ public class ShortTravelController {
         }
 
         try {
-            travelPlanService.saveTravelPlan(recommendations, userId);
+            travelPlanService.saveTravelPlan(saveShortTravelDTO, userId);
             return ResponseEntity.ok("일정이 성공적으로 저장되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 저장 중 오류 발생: " + e.getMessage());

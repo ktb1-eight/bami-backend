@@ -2,6 +2,7 @@ package com.example.bami.short_travel.service;
 
 import com.example.bami.short_travel.dto.PlaceDTO;
 import com.example.bami.short_travel.dto.RecommendationDTO;
+import com.example.bami.short_travel.dto.SaveShortTravelDTO;
 import com.example.bami.short_travel.entity.PlaceEntity;
 import com.example.bami.short_travel.entity.RecommendationEntity;
 import com.example.bami.short_travel.entity.TravelPlanEntity;
@@ -12,8 +13,6 @@ import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class TravelPlanService {
@@ -33,7 +32,10 @@ public class TravelPlanService {
     }
 
     @Transactional
-    public void saveTravelPlan(List<RecommendationDTO> recommendations, int userId) {
+    public void saveTravelPlan(SaveShortTravelDTO saveShortTravelDTO, int userId) {
+        String startDate = saveShortTravelDTO.getStartDate().substring(0, 10);
+        String endDate = saveShortTravelDTO.getEndDate().substring(0, 10);
+
         TravelPlanEntity travelPlan = new TravelPlanEntity();
         BamiUser user = userRepository.findById(userId);
 
@@ -42,8 +44,9 @@ public class TravelPlanService {
         }
 
         travelPlan.setUser(user);
+        travelPlan.setDate(startDate, endDate);
 
-        for (RecommendationDTO recommendation : recommendations) {
+        for (RecommendationDTO recommendation : saveShortTravelDTO.getRecommendations()) {
             RecommendationEntity recommendationDay = new RecommendationEntity(recommendation.getDay());
             for (PlaceDTO placeDTO : recommendation.getPlaces()) {
                 PlaceEntity place = new PlaceEntity(placeDTO.getName(),

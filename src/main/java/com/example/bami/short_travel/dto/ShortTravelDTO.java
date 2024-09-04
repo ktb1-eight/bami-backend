@@ -9,6 +9,9 @@ public class ShortTravelDTO {
     private Preferences preferences;
     private Location location;
     private String travelPurpose;
+    private String startDate;
+    private String endDate;
+
 
     @Data
     public static class Preferences {
