@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,9 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
+
+    @Value("${app.end-point}")
+    private String endPoint;
 
     @Operation(summary = "카카오 로그인", description = "카카오 OAuth2 제공자를 이용한 로그인")
     @ApiResponses(value = {
@@ -100,7 +104,7 @@ public class AuthController {
         Cookie refreshTokenCookie = createRefreshTokenCookie(tokens.get(REFRESH_TOKEN));
         response.addCookie(refreshTokenCookie);
 
-        return new RedirectView("http://localhost:3000/login?accessToken=" + tokens.get("accessToken"));
+        return new RedirectView("http://" + endPoint + ":3000/login?accessToken=" + tokens.get("accessToken"));
     }
 
     private Cookie createRefreshTokenCookie(String refreshToken) {
