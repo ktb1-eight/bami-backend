@@ -83,6 +83,7 @@ jobs:
           -e DB_URL=$(aws ssm get-parameter --name "/bami/DB_URL" --with-decryption --query "Parameter.Value" --output text) \
           -e DB_USERNAME=$(aws ssm get-parameter --name "/bami/DB_USERNAME" --query "Parameter.Value" --output text) \
           -e DB_PASSWORD=$(aws ssm get-parameter --name "/bami/DB_PASSWORD" --with-decryption --query "Parameter.Value" --output text) \
+          -e BACK_EC2_END_POINT=$(aws ssm get-parameter --name "/bami/PUBLIC_DNS_ADDR" --query "Parameter.Value" --output text) \
         bami-backend:latest
 
         echo "Deployment completed successfully."
