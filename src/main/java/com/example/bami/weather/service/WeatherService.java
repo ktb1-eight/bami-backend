@@ -55,9 +55,14 @@ public class WeatherService {
         this.key = key;
     }
 
-    public double getTemparature(WeatherDTO q){
+    public double getTemparature(WeatherDTO q) {
         double fcstValue = 0;
         JSONArray parse_item = getForecast(q);
+
+        if (parse_item == null) {
+            log.error("Parsed forecast item is null, unable to retrieve temperature.");
+            return fcstValue;
+        }
 
         for (Object o : parse_item) {
             JSONObject weather = (JSONObject) o;
@@ -69,16 +74,22 @@ public class WeatherService {
             break;
         }
 
-
         return fcstValue;
     }
 
-    public double[] getHighLowTemperature(WeatherDTO q){
+    public double[] getHighLowTemperature(WeatherDTO q) {
         double low_val = 100;
         double high_val = 0;
 
         JSONArray parse_item = getForecast(q);
-        JSONObject weather; // parse_item은 배열형태이기 때문에 하나씩 데이터를 하나씩 가져올때 사용
+
+        // null 체크 추가
+        if (parse_item == null) {
+            log.error("Parsed forecast item is null, unable to retrieve high and low temperature.");
+            return new double[] {low_val, high_val}; // 기본값 반환
+        }
+
+        JSONObject weather;
 
         for (Object o : parse_item) {
             weather = (JSONObject) o;
@@ -90,7 +101,6 @@ public class WeatherService {
             high_val = Math.max(fcst_val, high_val);
             log.info(weather.get("fcstTime") + " " + weather.get("fcstDate") + " " + fcst_val);
         }
-
 
         return new double[] {low_val, high_val};
     }
@@ -106,23 +116,48 @@ public class WeatherService {
                     .uri(new URI(uriString))
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, clientResponse -> {
-                        log.error("Error status code: {}", clientResponse);
+                        log.error("Error status code: {}", clientResponse.statusCode());
                         return clientResponse.bodyToMono(String.class)
-                                .flatMap(body -> Mono.error(new RuntimeException()));
-
+                                .flatMap(body -> Mono.error(new RuntimeException("Failed to retrieve weather data: " + body)));
                     })
                     .bodyToMono(String.class)
                     .block();
 
+            log.info("API Response: {}", json); // 응답 데이터 로그 기록
+
             JSONParser parser = new JSONParser();
             JSONObject obj = (JSONObject) parser.parse(json);
-            JSONObject parse_response = (JSONObject) obj.get("response");
-            JSONObject parse_body = (JSONObject) parse_response.get("body");
-            JSONObject parse_items = (JSONObject) parse_body.get("items");
-            parse_item = (JSONArray) parse_items.get("item");
 
-        } catch ( Exception e) {
-            log.error("Unexpected error", e);
+            if (obj == null) {
+                log.error("Parsed JSON is null");
+                return null;
+            }
+
+            JSONObject parse_response = (JSONObject) obj.get("response");
+            if (parse_response == null) {
+                log.error("Response object is null");
+                return null;
+            }
+
+            JSONObject parse_body = (JSONObject) parse_response.get("body");
+            if (parse_body == null) {
+                log.error("Body object is null");
+                return null;
+            }
+
+            JSONObject parse_items = (JSONObject) parse_body.get("items");
+            if (parse_items == null) {
+                log.error("Items object is null");
+                return null;
+            }
+
+            parse_item = (JSONArray) parse_items.get("item");
+            if (parse_item == null) {
+                log.error("Items array is null");
+            }
+
+        } catch (Exception e) {
+            log.error("Unexpected error while retrieving forecast data", e);
         }
 
         return parse_item;

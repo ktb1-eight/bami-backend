@@ -1,5 +1,7 @@
 package com.example.bami.user.controller;
 
+import com.example.bami.short_travel.dto.TravelPlanDTO;
+import com.example.bami.short_travel.service.TravelPlanService;
 import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
 import com.example.bami.user.security.JwtTokenProvider;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,9 +32,12 @@ public class UserController {
     private JwtTokenProvider jwtTokenProvider;
     private UserRepository userRepository;
 
-    public UserController(JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    private TravelPlanService travelPlanService;
+
+    public UserController(JwtTokenProvider jwtTokenProvider, UserRepository userRepository, TravelPlanService travelPlanService) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.travelPlanService = travelPlanService;
     }
 
     private static final String EMAIL_KEY = "email";
@@ -144,5 +150,32 @@ public class UserController {
             }
         }
         return ResponseEntity.status(401).body("Unauthorized");
+    }
+
+    @GetMapping("/travel-plans")
+    public ResponseEntity<?> getUserTravelPlans(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+        }
+
+        String email = jwtTokenProvider.getClaimsAsMap(token).get("email");
+        BamiUser bamiUser = userRepository.findByEmail(email);
+        if (bamiUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자를 찾을 수 없습니다.");
+        }
+
+        int userId = bamiUser.getId();
+
+        if (userId == -1) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        try {
+            List<TravelPlanDTO> travelPlans = travelPlanService.getTravelPlansForUser(userId);
+            return ResponseEntity.ok(travelPlans);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("여행 계획 조회 중 오류 발생: " + e.getMessage());
+        }
     }
 }

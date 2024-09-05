@@ -21,6 +21,18 @@ public class TravelPlanEntity {
     @JoinColumn(name = "user_id")
     private BamiUser user;
 
+    @Column(nullable = false)
+    private String startDate;  // 여행 시작 날짜
+
+    @Column(nullable = false)
+    private String endDate;  // 여행 종료 날짜
+
+    @Column(nullable = false)
+    private Double latitude;
+
+    @Column(nullable = false)
+    private Double longitude;
+
 
     public void addRecommendationDay(RecommendationEntity recommendation) {
         recommendationDays.add(recommendation);
@@ -30,4 +42,15 @@ public class TravelPlanEntity {
     public void setUser(BamiUser user) {
         this.user = user;
     }
+
+    public void setDate(String startDate, String endDate){
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void setLocation(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
 }
