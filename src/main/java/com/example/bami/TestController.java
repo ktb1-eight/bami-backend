@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TestController {
 
-//    @RequestMapping("api/test")
-//    public void test(){
-//        log.info("성공");
-//        System.out.println("성공했습니다.");
-//    }
+    @RequestMapping("api/test")
+    public void test(){
+        log.info("성공");
+        System.out.println("성공했습니다.");
+    }
 }

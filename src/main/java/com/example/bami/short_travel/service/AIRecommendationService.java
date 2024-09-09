@@ -19,7 +19,7 @@ public class AIRecommendationService {
 
     private final WebClient webClient;
 
-    @Value("${app.end-point}")
+    @Value("${app.dns-addr}")
     private String endPoint;
 
     public AIRecommendationService(WebClient.Builder webClientBuilder) {
