@@ -22,7 +22,6 @@ import java.util.List;
 @Slf4j
 public class ShortTravelController {
 
-//    private final AIRecommendationService aiRecommendationService;
 
 //    public ShortTravelController(AIRecommendationService aiRecommendationService) {
 //        this.aiRecommendationService = aiRecommendationService;
@@ -33,6 +32,8 @@ public class ShortTravelController {
 //        log.info("Received travel plan: {}", shortTravelDTO);
 //        return aiRecommendationService.getRecommendations(shortTravelDTO);
 //    }
+
+//    private final AIRecommendationService aiRecommendationService;
 
     private final TravelPlanService travelPlanService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -48,6 +49,7 @@ public class ShortTravelController {
     public ResponseEntity<String> saveTravelPlan(@RequestBody SaveShortTravelDTO saveShortTravelDTO, HttpServletRequest request) {
         log.info(saveShortTravelDTO.getStartDate());
         log.info(saveShortTravelDTO.getEndDate());
+        System.out.println(saveShortTravelDTO);
 
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {

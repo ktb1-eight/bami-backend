@@ -33,6 +33,8 @@ public class TravelPlanEntity {
     @Column(nullable = false)
     private Double longitude;
 
+    private String address;
+
 
     public void addRecommendationDay(RecommendationEntity recommendation) {
         recommendationDays.add(recommendation);
@@ -48,9 +50,10 @@ public class TravelPlanEntity {
         this.endDate = endDate;
     }
 
-    public void setLocation(Double latitude, Double longitude) {
+    public void setLocation(Double latitude, Double longitude, String address) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.address = address;
     }
 
 }

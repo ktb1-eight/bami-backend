@@ -11,4 +11,5 @@ public class TravelPlanDTO {
     private List<RecommendationDTO> recommendations = new ArrayList<>();
     private String startDate;
     private String endDate;
+    private String address;
 }
