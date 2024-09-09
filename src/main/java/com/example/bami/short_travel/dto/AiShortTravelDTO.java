@@ -6,7 +6,9 @@ import java.util.List;
 
 @Data
 public class AiShortTravelDTO {
-    private String ADDRESS; // 주소
+    private double LATITUDE;     // 위도
+    private double LONGITUDE;    // 경도
+    private int DAY;
     private String MVMN_NM; // "자가용", "대중교통 등"
     private String GENDER; //"남성", "여성"
     private int AGE_GRP; // 20대면 20, 30대면 30 등등
@@ -20,7 +22,7 @@ public class AiShortTravelDTO {
     private int TRAVEL_MOTIVE_1; // 여행 동기
     private String REL_CD_Categorized; // 동행인 정보
 
-    public static AiShortTravelDTO toAiShortTravelDTO(ShortTravelDTO shortTravelDTO, String address){
+    public static AiShortTravelDTO toAiShortTravelDTO(ShortTravelDTO shortTravelDTO){
         AiShortTravelDTO aiShortTravelDTO = new AiShortTravelDTO();
         List<String> travelMotivations = List.of(
                 "일상적인 환경 및 역할에서의 탈출, 지루함 탈피",
@@ -35,7 +37,9 @@ public class AiShortTravelDTO {
                 "기타"
         );
 
-        aiShortTravelDTO.ADDRESS = address;
+        aiShortTravelDTO.LATITUDE = shortTravelDTO.getLocation().getLatitude();
+        aiShortTravelDTO.LONGITUDE = shortTravelDTO.getLocation().getLongitude();
+        aiShortTravelDTO.DAY = shortTravelDTO.getDay_duration();
         if (shortTravelDTO.getTransport().equals("차량 이용")){
             aiShortTravelDTO.MVMN_NM = "자가용";
         } else{

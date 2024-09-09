@@ -11,6 +11,7 @@ public class ShortTravelDTO {
     private String travelPurpose;
     private String startDate;
     private String endDate;
+    private int day_duration;
     private String gender;
     private String ageGroup;
 

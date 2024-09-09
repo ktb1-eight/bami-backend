@@ -1,14 +1,13 @@
 package com.example.bami.short_travel.controller;
 
-import com.example.bami.short_travel.dto.PlaceDTO;
-import com.example.bami.short_travel.dto.RecommendationDTO;
-import com.example.bami.short_travel.dto.SaveShortTravelDTO;
-import com.example.bami.short_travel.dto.ShortTravelDTO;
+import com.example.bami.short_travel.dto.*;
 import com.example.bami.short_travel.service.TravelPlanService;
 import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
 import com.example.bami.user.security.JwtTokenProvider;
+import com.example.bami.weather.service.ReverseGeocodingService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/shortTrip")
+@AllArgsConstructor
 @Slf4j
 public class ShortTravelController {
 
@@ -38,18 +38,13 @@ public class ShortTravelController {
     private final TravelPlanService travelPlanService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final ReverseGeocodingService reverseGeocodingService;
 
-    public ShortTravelController(TravelPlanService travelPlanService, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
-        this.travelPlanService = travelPlanService;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userRepository = userRepository;
-    }
 
     @PostMapping("/save")
     public ResponseEntity<String> saveTravelPlan(@RequestBody SaveShortTravelDTO saveShortTravelDTO, HttpServletRequest request) {
         log.info(saveShortTravelDTO.getStartDate());
         log.info(saveShortTravelDTO.getEndDate());
-        System.out.println(saveShortTravelDTO);
 
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {

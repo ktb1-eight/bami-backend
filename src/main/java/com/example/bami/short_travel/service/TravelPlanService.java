@@ -90,6 +90,7 @@ public class TravelPlanService {
         dto.setId(travelPlan.getId());
         dto.setStartDate(travelPlan.getStartDate());
         dto.setEndDate(travelPlan.getEndDate());
+        dto.setAddress(travelPlan.getAddress());
         dto.setRecommendations(travelPlan.getRecommendationDays().stream()
                 .map(this::convertRecommendationToDTO)
                 .collect(Collectors.toList()));
