@@ -38,7 +38,6 @@ public class ShortTravelController {
     private final TravelPlanService travelPlanService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-    private final ReverseGeocodingService reverseGeocodingService;
 
 
     @PostMapping("/save")

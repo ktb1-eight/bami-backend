@@ -18,21 +18,19 @@ import java.util.List;
 public class AIRecommendationService {
 
     private final WebClient webClient;
-    private final ReverseGeocodingService reverseGeocodingService;
 
-    //@Value("${ai.server.url}")
-    private String aiServerUrl;
+    @Value("${app.end-point}")
+    private String endPoint;
 
-    public AIRecommendationService(WebClient.Builder webClientBuilder, ReverseGeocodingService reverseGeocodingService) {
+    public AIRecommendationService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
-        this.reverseGeocodingService = reverseGeocodingService;
     }
 
     public Mono<List<RecommendationDTO>> getRecommendations(ShortTravelDTO shortTravelDTO) {
         AiShortTravelDTO aiShortTravelDTO = AiShortTravelDTO.toAiShortTravelDTO(shortTravelDTO);
 
         return webClient.post()
-                .uri(aiServerUrl + "/trip/short")
+                .uri("http://" + endPoint + ":8001/trip/short")
                 .bodyValue(aiShortTravelDTO)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<RecommendationDTO>>() {})
