@@ -29,7 +29,7 @@ public class ShortTravelDTO {
 
     @Data
     public static class Location {
-        private double latitude;
-        private double longitude;
+        private float latitude;
+        private float longitude;
     }
 }

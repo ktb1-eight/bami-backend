@@ -37,10 +37,8 @@ public class TravelPlanService {
     public void saveTravelPlan(SaveShortTravelDTO saveShortTravelDTO, int userId) {
         String startDate = saveShortTravelDTO.getStartDate().substring(0, 10);
         String endDate = saveShortTravelDTO.getEndDate().substring(0, 10);
-        Double latitude = saveShortTravelDTO.getLatitude();
-        Double longitude = saveShortTravelDTO.getLongitude();
-        log.info(latitude.toString());
-        log.info(longitude.toString());
+        float latitude = saveShortTravelDTO.getLatitude();
+        float longitude = saveShortTravelDTO.getLongitude();
 
         TravelPlanEntity travelPlan = new TravelPlanEntity();
         BamiUser user = userRepository.findById(userId);
@@ -58,8 +56,8 @@ public class TravelPlanService {
             RecommendationEntity recommendationDay = new RecommendationEntity(recommendation.getDay());
             for (PlaceDTO placeDTO : recommendation.getPlaces()) {
                 PlaceEntity place = new PlaceEntity(placeDTO.getName(),
-                        placeDTO.getRoadAddress(),
-                        placeDTO.getLotnoAddress(),
+                        placeDTO.getCity(),
+                        placeDTO.getAddress(),
                         placeDTO.getLatitude(),
                         placeDTO.getLongitude());
                 recommendationDay.addPlace(place);

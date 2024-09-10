@@ -6,21 +6,22 @@ import java.util.List;
 
 @Data
 public class AiShortTravelDTO {
-    private double LATITUDE;     // 위도
-    private double LONGITUDE;    // 경도
-    private int DAY;
-    private String MVMN_NM; // "자가용", "대중교통 등"
-    private String GENDER; //"남성", "여성"
-    private int AGE_GRP; // 20대면 20, 30대면 30 등등
-    private int TRAVEL_STYL_1;
-    private int TRAVEL_STYL_2;
-    private int TRAVEL_STYL_3;
-    private int TRAVEL_STYL_5;
-    private int TRAVEL_STYL_6;
-    private int TRAVEL_STYL_7;
-    private int TRAVEL_STYL_8;
-    private int TRAVEL_MOTIVE_1; // 여행 동기
-    private String REL_CD_Categorized; // 동행인 정보
+    private float latitude;     // 위도
+    private float longitude;    // 경도
+    private String mvmn_nm; // "자가용", "대중교통 등"
+    private String gender; //"남성", "여성"
+    private int age_grp; // 20대면 20, 30대면 30 등등
+    private int day;
+    private int travel_styl_1;
+    private int travel_styl_2;
+    private int travel_styl_3;
+    private int travel_styl_5;
+    private int travel_styl_6;
+    private int travel_styl_7;
+    private int travel_styl_8;
+    private int travel_motive_1; // 여행 동기
+    private String rel_cd_categorized; // 동행인 정보
+
 
     public static AiShortTravelDTO toAiShortTravelDTO(ShortTravelDTO shortTravelDTO){
         AiShortTravelDTO aiShortTravelDTO = new AiShortTravelDTO();
@@ -37,32 +38,31 @@ public class AiShortTravelDTO {
                 "기타"
         );
 
-        aiShortTravelDTO.LATITUDE = shortTravelDTO.getLocation().getLatitude();
-        aiShortTravelDTO.LONGITUDE = shortTravelDTO.getLocation().getLongitude();
-        aiShortTravelDTO.DAY = shortTravelDTO.getDay_duration();
+        aiShortTravelDTO.latitude = shortTravelDTO.getLocation().getLatitude();
+        aiShortTravelDTO.longitude = shortTravelDTO.getLocation().getLongitude();
+        aiShortTravelDTO.day = shortTravelDTO.getDay_duration();
         if (shortTravelDTO.getTransport().equals("차량 이용")){
-            aiShortTravelDTO.MVMN_NM = "자가용";
+            aiShortTravelDTO.mvmn_nm = "자가용";
         } else{
-            aiShortTravelDTO.MVMN_NM = "대중교통 등";
+            aiShortTravelDTO.mvmn_nm = "대중교통 등";
         }
-        aiShortTravelDTO.GENDER = shortTravelDTO.getGender().replace("성", "");
-        aiShortTravelDTO.AGE_GRP = Integer.parseInt(shortTravelDTO.getAgeGroup().replace("대", "").replace(" 이상", "").replace(" 미만", ""));
-        aiShortTravelDTO.TRAVEL_STYL_1 = Integer.parseInt(shortTravelDTO.getPreferences().getNature());
-        aiShortTravelDTO.TRAVEL_STYL_2 = Integer.parseInt(shortTravelDTO.getPreferences().getDuration());
-        aiShortTravelDTO.TRAVEL_STYL_3 = Integer.parseInt(shortTravelDTO.getPreferences().getNewPlaces());
-        aiShortTravelDTO.TRAVEL_STYL_5 = Integer.parseInt(shortTravelDTO.getPreferences().getRelaxation());
-        aiShortTravelDTO.TRAVEL_STYL_6 = Integer.parseInt(shortTravelDTO.getPreferences().getExploration());
-        aiShortTravelDTO.TRAVEL_STYL_7 = Integer.parseInt(shortTravelDTO.getPreferences().getPlanning());
-        aiShortTravelDTO.TRAVEL_STYL_8 = Integer.parseInt(shortTravelDTO.getPreferences().getPhotography());
+        aiShortTravelDTO.gender = shortTravelDTO.getGender();
+        aiShortTravelDTO.age_grp = Integer.parseInt(shortTravelDTO.getAgeGroup().replace("대", "").replace(" 이상", "").replace(" 미만", ""));
+        aiShortTravelDTO.travel_styl_1 = Integer.parseInt(shortTravelDTO.getPreferences().getNature());
+        aiShortTravelDTO.travel_styl_2 = Integer.parseInt(shortTravelDTO.getPreferences().getDuration());
+        aiShortTravelDTO.travel_styl_3 = Integer.parseInt(shortTravelDTO.getPreferences().getNewPlaces());
+        aiShortTravelDTO.travel_styl_5 = Integer.parseInt(shortTravelDTO.getPreferences().getRelaxation());
+        aiShortTravelDTO.travel_styl_6 = Integer.parseInt(shortTravelDTO.getPreferences().getExploration());
+        aiShortTravelDTO.travel_styl_7 = Integer.parseInt(shortTravelDTO.getPreferences().getPlanning());
+        aiShortTravelDTO.travel_styl_8 = Integer.parseInt(shortTravelDTO.getPreferences().getPhotography());
         for (int i = 0; i < travelMotivations.size(); i++){
             if (travelMotivations.get(i).equals(shortTravelDTO.getTravelPurpose())){
-                aiShortTravelDTO.TRAVEL_MOTIVE_1 = i + 1;
+                aiShortTravelDTO.travel_motive_1 = i + 1;
                 break;
             }
         }
-        aiShortTravelDTO.REL_CD_Categorized = shortTravelDTO.getCompanion().replace("와", "").replace("과", "");
+        aiShortTravelDTO.rel_cd_categorized = shortTravelDTO.getCompanion().replace("와", "").replace("과", "");
 
-        System.out.println(aiShortTravelDTO);
         return aiShortTravelDTO;
     }
 }
