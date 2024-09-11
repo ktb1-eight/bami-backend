@@ -12,12 +12,12 @@ public class WebConfig implements WebMvcConfigurer {
     private String endPoint;
 
     @Value("${cors.allowed-origins}")
-    private String allowedOrigins;
+    private String allowedOrigin;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 API 경로에 대해 CORS 설정
-                .allowedOrigins(allowed-origins)
+                .allowedOrigins(allowedOrigin)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
