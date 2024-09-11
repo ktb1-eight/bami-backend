@@ -21,7 +21,7 @@ public class AIRecommendationService {
     private final WebClient webClient;
     private ReverseGeocodingService reverseGeocodingService;
 
-    @Value("app.ai-ec2-addr")
+    @Value("app.ai-addr")
     private String endPoint;
 
     public AIRecommendationService(WebClient.Builder webClientBuilder, ReverseGeocodingService reverseGeocodingService) {
