@@ -11,6 +11,9 @@ public class ShortTravelDTO {
     private String travelPurpose;
     private String startDate;
     private String endDate;
+    private int day_duration;
+    private String gender;
+    private String ageGroup;
 
 
     @Data
@@ -26,7 +29,7 @@ public class ShortTravelDTO {
 
     @Data
     public static class Location {
-        private double latitude;
-        private double longitude;
+        private float latitude;
+        private float longitude;
     }
 }

@@ -12,6 +12,8 @@ import com.example.bami.short_travel.repository.RecommendationRepository;
 import com.example.bami.short_travel.repository.TravelPlanRepository;
 import com.example.bami.user.domain.BamiUser;
 import com.example.bami.user.repository.UserRepository;
+import com.example.bami.weather.service.ReverseGeocodingService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class TravelPlanService {
 
@@ -27,24 +30,15 @@ public class TravelPlanService {
     private final TravelPlanRepository travelPlanRepository;
     private final RecommendationRepository recommendationRepository;
     private final PlaceRepository placeRepository;
+    private final ReverseGeocodingService reverseGeocodingService;
 
-
-    public TravelPlanService(UserRepository userRepository, TravelPlanRepository travelPlanRepository,
-                             RecommendationRepository recommendationRepository, PlaceRepository placeRepository) {
-        this.userRepository = userRepository;
-        this.travelPlanRepository = travelPlanRepository;
-        this.recommendationRepository = recommendationRepository;
-        this.placeRepository = placeRepository;
-    }
 
     @Transactional
     public void saveTravelPlan(SaveShortTravelDTO saveShortTravelDTO, int userId) {
         String startDate = saveShortTravelDTO.getStartDate().substring(0, 10);
         String endDate = saveShortTravelDTO.getEndDate().substring(0, 10);
-        Double latitude = saveShortTravelDTO.getLatitude();
-        Double longitude = saveShortTravelDTO.getLongitude();
-        log.info(latitude.toString());
-        log.info(longitude.toString());
+        float latitude = saveShortTravelDTO.getLatitude();
+        float longitude = saveShortTravelDTO.getLongitude();
 
         TravelPlanEntity travelPlan = new TravelPlanEntity();
         BamiUser user = userRepository.findById(userId);
@@ -55,15 +49,15 @@ public class TravelPlanService {
 
         travelPlan.setUser(user);
         travelPlan.setDate(startDate, endDate);
-        travelPlan.setLocation(latitude, longitude);
+        travelPlan.setLocation(latitude, longitude, reverseGeocodingService.getAddress(latitude, longitude));
 
 
         for (RecommendationDTO recommendation : saveShortTravelDTO.getRecommendations()) {
             RecommendationEntity recommendationDay = new RecommendationEntity(recommendation.getDay());
             for (PlaceDTO placeDTO : recommendation.getPlaces()) {
                 PlaceEntity place = new PlaceEntity(placeDTO.getName(),
-                        placeDTO.getRoadAddress(),
-                        placeDTO.getLotnoAddress(),
+                        placeDTO.getCity(),
+                        placeDTO.getAddress(),
                         placeDTO.getLatitude(),
                         placeDTO.getLongitude());
                 recommendationDay.addPlace(place);
@@ -94,6 +88,7 @@ public class TravelPlanService {
         dto.setId(travelPlan.getId());
         dto.setStartDate(travelPlan.getStartDate());
         dto.setEndDate(travelPlan.getEndDate());
+        dto.setAddress(travelPlan.getAddress());
         dto.setRecommendations(travelPlan.getRecommendationDays().stream()
                 .map(this::convertRecommendationToDTO)
                 .collect(Collectors.toList()));

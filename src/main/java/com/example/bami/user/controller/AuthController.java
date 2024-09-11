@@ -36,7 +36,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @Value("${app.end-point}")
+    @Value("${app.dns-addr}")
     private String endPoint;
 
     @Operation(summary = "카카오 로그인", description = "카카오 OAuth2 제공자를 이용한 로그인")

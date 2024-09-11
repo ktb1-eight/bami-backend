@@ -15,13 +15,13 @@ public class PlaceEntity {
 
     private String roadAddress;
     private String lotnoAddress;
-    private Double latitude;
-    private Double longitude;
+    private float latitude;
+    private float longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private RecommendationEntity recommendation;
 
-    public PlaceEntity(String name, String roadAddress, String lotnoAddress, double latitude, double longitude) {
+    public PlaceEntity(String name, String roadAddress, String lotnoAddress, float latitude, float longitude) {
         this.name = name;
         this.roadAddress = roadAddress;
         this.lotnoAddress = lotnoAddress;

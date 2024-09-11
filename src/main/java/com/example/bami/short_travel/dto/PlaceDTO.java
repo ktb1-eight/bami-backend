@@ -7,8 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlaceDTO {
     private String name;         // 장소 이름
-    private String roadAddress;  // 도로명 주소
-    private String lotnoAddress; // 지번 주소
-    private double latitude;     // 위도
-    private double longitude;    // 경도
+    private String city;  // 도로명 주소
+    private String address; // 지번 주소
+    private float longitude;    // 경도
+    private float latitude;     // 위도
 }
