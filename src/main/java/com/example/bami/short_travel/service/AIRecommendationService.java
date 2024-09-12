@@ -21,7 +21,7 @@ public class AIRecommendationService {
     private final WebClient webClient;
     private ReverseGeocodingService reverseGeocodingService;
 
-    @Value("${app.dns-addr}")
+    @Value("app.ai-addr")
     private String endPoint;
 
     public AIRecommendationService(WebClient.Builder webClientBuilder, ReverseGeocodingService reverseGeocodingService) {
@@ -41,10 +41,10 @@ public class AIRecommendationService {
                 .bodyValue(aiShortTravelDTO)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                .block();  // 동기적으로 결과를 받을 때 block() 사용
+                .block();
 
         List<RecommendationDTO> recommendationDTOS = new ArrayList<>();
-//        // 받아온 응답을 출력
+
         for (Map<String, Object> recommendation : recommendations) {
             List<Map<String, Object>> places = (List<Map<String, Object>>) recommendation.get("places");
 
