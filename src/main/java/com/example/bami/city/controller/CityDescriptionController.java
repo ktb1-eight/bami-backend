@@ -39,7 +39,11 @@ public class CityDescriptionController {
             String url = "https://ko.wikipedia.org/wiki/" + cityName;
             Document doc = Jsoup.connect(url).get();
             Elements elements = doc.select(".mw-content-ltr.mw-parser-output p");
-
+            System.out.println(url);
+            System.out.println(extractDescription(elements));
+//            if(extractDescription(elements).length() == 0) {
+//                System.out.print(elements);
+//            }
             return extractDescription(elements);
 
         } catch (HttpClientErrorException e) {
@@ -56,6 +60,9 @@ public class CityDescriptionController {
     private String extractDescription(Elements elements) {
         if (elements.size() > 1) {
             Element secondParagraph = elements.get(1);
+            if(secondParagraph.text().length() == 0) {
+                secondParagraph = elements.get(2);
+            }
             return secondParagraph.text();
         } else {
             return "설명을 찾을 수 없습니다.";
