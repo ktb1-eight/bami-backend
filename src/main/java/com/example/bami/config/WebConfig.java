@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.end-point}")
+    @Value("${app.dns-addr}")
     private String endPoint;
 
     @Override
