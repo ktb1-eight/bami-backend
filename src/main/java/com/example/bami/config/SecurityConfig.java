@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/ai/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/actuator/health").permitAll() // 헬스 체크 허용 추가
                         // Swagger 관련 경로들에 대해 접근을 허용합니다.
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated() // 그 외의 모든 요청은 인증된 사용자만 접근
